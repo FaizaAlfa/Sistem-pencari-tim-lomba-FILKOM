@@ -69,7 +69,6 @@ Sistem-pencari-tim-lomba-FILKOM/
 │   ├── modal-invite.html       # Layar 3: Dialog Modal / Bottom Sheet Kirim Undangan
 │   ├── screen-invitations.html # Layar 4: Status & Notifikasi Undangan (Desktop & Mobile)
 │   ├── screen-team.html        # Layar 5: Manajemen Tim Saya & Progres Posisi
-│   └── screens-cache.js        # Pre-bundled template fallback (dukungan luring / protokol file://)
 ├── Laporan Proyek Akhir - Kelompok 5-1.pdf
 └── README.md
 ```
@@ -91,5 +90,4 @@ Aplikasi web ini murni menggunakan Vanilla JS, CSS3, dan Bootstrap 5 via CDN, ta
    ```
    Aplikasi akan memuat masing-masing file HTML di folder `screens/` secara dinamis.
 
-2. **Buka Langsung Berkas HTML (`file://`):**
-   Buka berkas [index.html](file:///D:/CODE/PROJEK/Github/Sistem-pencari-tim-lomba-FILKOM/index.html) langsung di peramban web modern (Google Chrome, Microsoft Edge, Firefox, Safari). Berkas `screens/screens-cache.js` secara otomatis menyediakan fallback template sehingga aplikasi tetap berfungsi penuh tanpa kendala kebijakan CORS lokal browser.
+2. Aplikasi perlu dijalankan melalui server lokal karena setiap layar dimuat dari berkas HTML terpisah.

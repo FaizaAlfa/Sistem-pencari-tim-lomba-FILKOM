@@ -1,61 +1,50 @@
 <dialog id="modal-invite" class="invite-dialog" aria-labelledby="inviteModalTitle">
   <div class="modal-header-custom">
-    <h3 id="inviteModalTitle" class="modal-title-custom">Undang Alya Putri ke Tim?</h3>
+    <h3 id="inviteModalTitle" class="modal-title-custom modal-title-lg">Undang Alya Putri ke Tim?</h3>
     <button type="button" class="btn-close-custom" id="btnCloseInviteDialog" aria-label="Tutup Jendela">
       <i class="bi bi-x-lg"></i>
     </button>
   </div>
 
   <div class="modal-body-custom">
+    <p class="modal-instruction-text">
+      Undangan untuk peran yang dipilih akan dikirim kepada Alya Putri. Status undangan akan menjadi Menunggu hingga kandidat memberikan respons.
+    </p>
+
     <div class="modal-candidate-summary">
       <div class="modal-avatar-mini" aria-hidden="true">AP</div>
       <div>
         <strong class="d-block text-white fs-6">Alya Putri</strong>
-        <span class="text-caption text-light">Teknik Informatika &bull; Semester 5</span>
+        <span class="text-caption text-light">Teknik Informatika</span>
       </div>
     </div>
 
-    <div class="modal-consequence-text">
-      <i class="bi bi-exclamation-triangle-fill text-warning me-1"></i>
-      <span>Undangan akan dikirimkan ke Alya Putri. Kuota posisi pada tim Anda akan dicadangkan hingga kandidat merespons.</span>
-    </div>
-
     <fieldset class="role-fieldset">
-      <legend class="role-legend">Pilih Posisi / Peran Tim</legend>
+      <legend class="role-legend">Pilih Peran</legend>
       
       <div class="role-radio-group">
         <label class="role-radio-label">
-          <input type="radio" name="selectedRole" value="UI/UX Designer" class="role-radio-input">
-          <div class="role-info-text">
-            <span class="role-title">UI/UX Designer</span>
-            <span class="role-desc">Merancang wireframe, user flow, dan antarmuka interaktif</span>
-          </div>
-        </label>
-
-        <label class="role-radio-label">
           <input type="radio" name="selectedRole" value="Frontend Developer" class="role-radio-input">
-          <div class="role-info-text">
-            <span class="role-title">Frontend Developer</span>
-            <span class="role-desc">Mengimplementasikan antarmuka ke kode web/aplikasi</span>
-          </div>
+          <span class="role-title">Frontend Developer</span>
         </label>
 
         <label class="role-radio-label">
           <input type="radio" name="selectedRole" value="Backend Developer" class="role-radio-input">
-          <div class="role-info-text">
-            <span class="role-title">Backend Developer</span>
-            <span class="role-desc">Mengembangkan API, basis data, dan arsitektur server</span>
-          </div>
+          <span class="role-title">Backend Developer</span>
+        </label>
+
+        <label class="role-radio-label">
+          <input type="radio" name="selectedRole" value="UI/UX Designer" class="role-radio-input">
+          <span class="role-title">UI/UX Designer</span>
         </label>
 
         <label class="role-radio-label">
           <input type="radio" name="selectedRole" value="Data Analyst" class="role-radio-input">
-          <div class="role-info-text">
-            <span class="role-title">Data Analyst</span>
-            <span class="role-desc">Mengolah dataset, visualisasi insight, dan statistik</span>
-          </div>
+          <span class="role-title">Data Analyst</span>
         </label>
       </div>
+
+      <p class="role-helper-note">Pilih satu peran untuk Alya Putri.</p>
     </fieldset>
 
     <div id="inviteErrorAlert" class="modal-error-alert" role="alert" tabindex="-1">
@@ -65,12 +54,13 @@
   </div>
 
   <div class="modal-footer-custom">
-    <button type="button" class="btn-secondary-light" id="btnCancelInvite">
-      Batal
-    </button>
-    <button type="button" class="btn-cta-cyan" id="btnSubmitInvite">
-      <i class="bi bi-send-fill"></i>
-      <span>Kirim Undangan</span>
-    </button>
+    <div class="modal-footer-stretch">
+      <button type="button" class="btn-secondary-light" id="btnCancelInvite">
+        Batal
+      </button>
+      <button type="button" class="btn-cta-cyan" id="btnSubmitInvite">
+        <span>Kirim Undangan</span>
+      </button>
+    </div>
   </div>
 </dialog>

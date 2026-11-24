@@ -1,58 +1,67 @@
 <section id="screen-team" class="screen-section d-none" aria-labelledby="teamScreenTitle">
-  <div class="d-flex align-items-center justify-content-between mb-4">
-    <div>
-      <h1 id="teamScreenTitle" class="h1 mb-1">Manajemen Tim</h1>
-      <p class="mb-0">Kelola komposisi peran dan kesiapan tim lomba Anda.</p>
-    </div>
+  <div class="mb-4">
+    <h1 id="teamScreenTitle" class="h1 fw-bold mb-0">Tim Saya</h1>
   </div>
 
   <div class="row g-4">
     <aside class="col-12 col-lg-4">
       <div class="team-aside-card">
-        <span class="team-badge-pill">Kategori kompetisi: Hackathon</span>
-        <h2>Tim Nalar</h2>
-        <p>
-          Fokus pada pengembangan solusi digital inovatif untuk kebutuhan sivitas akademika FILKOM UB.
+        <div class="team-badge-pill">Kategori kompetisi: Hackathon</div>
+        <h2 class="team-name-title">Tim Nalar</h2>
+        <p class="team-desc-text">
+          Mengembangkan solusi digital untuk membantu aktivitas mahasiswa di kampus.
         </p>
 
-        <div class="mb-4">
-          <div class="text-caption text-light mb-1">Target Kompetisi</div>
-          <strong class="text-white">Gemastik / Hackathon Nasional 2026</strong>
-        </div>
-
-        <button class="btn-cta-cyan w-100 py-3" id="btnViewInvitationsFromTeam">
-          <i class="bi bi-envelope-paper-fill"></i>
+        <button class="btn-cta-cyan w-100 py-3 mt-4" id="btnViewInvitationsFromTeam">
           <span>Lihat Undangan</span>
         </button>
       </div>
     </aside>
 
     <section class="col-12 col-lg-8" aria-labelledby="progressTitle">
-      <div class="team-progress-card">
-        <div class="team-progress-header">
-          <div>
-            <h3 id="progressTitle" class="h3 mb-1">Progres Pembentukan Tim</h3>
-            <div class="fw-bold fs-5 text-primary" id="teamProgressText">1 dari 3 posisi terisi</div>
+      <div class="team-progress-card mb-4">
+        <div class="d-flex align-items-center justify-content-between mb-3">
+          <h2 id="progressTitle" class="h3 fw-bold mb-0">Progres Tim</h2>
+          <span class="text-secondary fw-medium" id="teamProgressText">1 dari 3 posisi terisi</span>
+        </div>
+
+        <div class="team-status-grid mb-3">
+          <div class="team-stat-box box-accepted">
+            <div class="stat-left">
+              <span class="stat-num" id="teamFilledCount">1</span>
+              <span class="stat-label">Terisi (Diterima)</span>
+            </div>
+            <i class="bi bi-check-lg stat-icon"></i>
           </div>
-          <div class="d-flex gap-2">
-            <span class="badge status-badge-accepted"><span id="teamFilledCount">1</span> Terisi</span>
-            <span class="badge status-badge-pending"><span id="teamPendingCount">1</span> Menunggu</span>
-            <span class="badge status-badge-vacant"><span id="teamVacantCount">1</span> Kosong</span>
+
+          <div class="team-stat-box box-pending">
+            <div class="stat-left">
+              <span class="stat-num" id="teamPendingCount">1</span>
+              <span class="stat-label">Menunggu</span>
+            </div>
+            <i class="bi bi-clock stat-icon"></i>
+          </div>
+
+          <div class="team-stat-box box-vacant">
+            <div class="stat-left">
+              <span class="stat-num" id="teamVacantCount">1</span>
+              <span class="stat-label">Kosong</span>
+            </div>
+            <i class="bi bi-dash-circle stat-icon"></i>
           </div>
         </div>
 
-        <div class="progress-bar-custom" role="progressbar" aria-valuenow="33" aria-valuemin="0" aria-valuemax="100">
+        <div class="progress-bar-custom mb-2" role="progressbar" aria-valuenow="33" aria-valuemin="0" aria-valuemax="100">
           <div class="progress-fill-custom" id="teamProgressBarFill" style="width: 33%;"></div>
         </div>
 
-        <p class="progress-note">
-          <i class="bi bi-info-circle-fill text-muted"></i>
+        <p class="progress-note mb-0">
           <span>Menunggu belum dihitung sebagai posisi terisi.</span>
         </p>
       </div>
 
-      <h3 class="h3 mb-3">Anggota dan Posisi Tim</h3>
-      <div class="positions-container" id="teamSlotsContainer">
+      <h3 class="h3 fw-bold mb-3">Anggota dan Posisi Tim</h3>
+      <div class="positions-container d-flex flex-column gap-3" id="teamSlotsContainer">
       </div>
     </section>
   </div>

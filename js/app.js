@@ -1,6 +1,6 @@
 const APP_STATE = {
   currentScreen: 'screen-dashboard', 
-  activeCategory: 'Semua',
+  activeCategory: 'Hackathon',
   searchQuery: '',
   filterProdi: [],
   filterSkills: [],
@@ -65,6 +65,7 @@ const APP_STATE = {
       candidateName: 'Alya Putri',
       initials: 'AP',
       candidateId: 'alya',
+      prodi: 'Teknik Informatika',
       role: 'UI/UX Designer',
       date: '10 Nov 2026',
       status: 'pending',
@@ -75,6 +76,7 @@ const APP_STATE = {
       candidateName: 'Bima Pratama',
       initials: 'BP',
       candidateId: 'bima',
+      prodi: 'Sistem Informasi',
       role: 'Data Analyst',
       date: '09 Nov 2026',
       status: 'accepted',
@@ -85,6 +87,7 @@ const APP_STATE = {
       candidateName: 'Citra Maheswari',
       initials: 'CM',
       candidateId: 'citra',
+      prodi: 'Sistem Informasi',
       role: 'Frontend Developer',
       date: '08 Nov 2026',
       status: 'rejected',
@@ -95,6 +98,7 @@ const APP_STATE = {
       candidateName: 'Dimas Saputra',
       initials: 'DS',
       candidateId: 'dimas',
+      prodi: 'Teknik Informatika',
       role: 'Backend Developer',
       date: '07 Nov 2026',
       status: 'pending',
@@ -138,6 +142,19 @@ const APP_STATE = {
 const DOM = {
   screens: {}
 };
+
+const SCREEN_ROUTES = {
+  'screen-dashboard': 'cari-kandidat',
+  'screen-profile': 'profil',
+  'screen-invitations': 'undangan',
+  'screen-team': 'tim-saya'
+};
+
+function getScreenFromLocation() {
+  const route = window.location.hash.slice(1);
+  return Object.keys(SCREEN_ROUTES).find(screenId => SCREEN_ROUTES[screenId] === route)
+    || 'screen-dashboard';
+}
 
 function initDOMElements() {
   DOM.screens = {
@@ -196,16 +213,11 @@ function initDOMElements() {
 
 async function loadScreenHTML(screenId, filePath) {
   try {
-    if (window.location.protocol === 'file:') {
-      throw new Error('file-protocol');
-    }
     const res = await fetch(filePath);
     if (!res.ok) throw new Error(`HTTP ${res.status}`);
     return await res.text();
-  } catch (err) {
-    if (window.SCREEN_FALLBACKS && window.SCREEN_FALLBACKS[screenId]) {
-      return window.SCREEN_FALLBACKS[screenId];
-    }
+  } catch (error) {
+    console.error(`Gagal memuat ${filePath}:`, error);
     return '';
   }
 }
@@ -235,8 +247,15 @@ async function loadAllScreens() {
   }
 }
 
-function navigateToScreen(targetScreenId) {
+function navigateToScreen(targetScreenId, updateUrl = true) {
   APP_STATE.currentScreen = targetScreenId;
+
+  if (updateUrl && SCREEN_ROUTES[targetScreenId]) {
+    const nextHash = `#${SCREEN_ROUTES[targetScreenId]}`;
+    if (window.location.hash !== nextHash) {
+      window.history.pushState(null, '', nextHash);
+    }
+  }
 
   Object.keys(DOM.screens).forEach(key => {
     const screenEl = DOM.screens[key];
@@ -354,84 +373,55 @@ function renderCandidates() {
   DOM.candidatesContainer.innerHTML = '';
 
   filtered.forEach(c => {
-    const col = document.createElement('div');
-    col.className = 'col-12 col-md-6 mb-4';
+    const card = document.createElement('article');
 
     if (c.id === 'alya') {
-      col.innerHTML = `
-        <article class="candidate-card featured-card" aria-label="Profil ${c.name}">
-          <div class="d-flex align-items-center gap-3 mb-3">
-            <div class="candidate-avatar avatar-alya" aria-hidden="true">${c.initials}</div>
-            <div>
-              <h3 class="candidate-name mb-0">${c.name}</h3>
-              <div class="candidate-meta">${c.prodi}</div>
+      card.className = 'candidate-card candidate-card-blue';
+      card.setAttribute('aria-label', `Profil ${c.name}`);
+      card.innerHTML = `
+        <div class="candidate-card-main">
+          <div class="candidate-avatar avatar-alya" aria-hidden="true">${c.initials}</div>
+          <div class="candidate-info">
+            <h3 class="candidate-name">${c.name}</h3>
+            <div class="candidate-meta">${c.prodi}</div>
+            <div class="tag-container">
+              ${c.skills.map(skill => `<span class="tag-skill">${skill}</span>`).join('')}
             </div>
+            <div class="candidate-interest">Minat: ${c.categories.join(', ')}</div>
           </div>
-          
-          <div class="tag-container mb-3">
-            ${c.skills.map(skill => `<span class="tag-skill">${skill}</span>`).join('')}
-          </div>
-
-          <div class="info-row mb-2">
-            <span class="info-row-label">Minat Kompetisi</span>
-            <span class="info-row-value">${c.categories.join(', ')}</span>
-          </div>
-
-          <div class="info-row mb-4">
-            <span class="info-row-label">Status Portofolio</span>
-            <span class="info-row-value d-flex align-items-center gap-2">
-              <i class="bi bi-check-circle-fill text-warning"></i>
-              Portofolio tersedia (${c.portfolios.length} karya)
-            </span>
-          </div>
-
-          <div class="mt-auto pt-2">
-            <button class="btn-cta-cyan w-100 btn-view-profile" data-candidate-id="${c.id}">
-              <span>Lihat Profil</span>
-              <i class="bi bi-arrow-right"></i>
-            </button>
-          </div>
-        </article>
+        </div>
+        <div class="candidate-card-side">
+          <span class="candidate-badge-portfolio">Portofolio tersedia</span>
+          <button class="btn-cta-cyan btn-view-profile" data-candidate-id="${c.id}">
+            <span>Lihat Profil</span>
+          </button>
+        </div>
       `;
     } else {
-      col.innerHTML = `
-        <article class="candidate-card" aria-label="Profil ${c.name}">
-          <div class="d-flex align-items-center gap-3 mb-3">
-            <div class="candidate-avatar avatar-bima" aria-hidden="true">${c.initials}</div>
-            <div>
-              <h3 class="candidate-name mb-0">${c.name}</h3>
-              <div class="candidate-meta">${c.prodi}</div>
+      card.className = 'candidate-card candidate-card-mint';
+      card.setAttribute('aria-label', `Profil ${c.name}`);
+      card.innerHTML = `
+        <div class="candidate-card-main">
+          <div class="candidate-avatar avatar-bima" aria-hidden="true">${c.initials}</div>
+          <div class="candidate-info">
+            <h3 class="candidate-name text-dark">${c.name}</h3>
+            <div class="candidate-meta text-secondary">${c.prodi}</div>
+            <div class="tag-container">
+              ${c.skills.map(skill => `<span class="tag-skill">${skill}</span>`).join('')}
             </div>
+            <div class="candidate-interest text-secondary">Minat: ${c.categories.join(', ')}</div>
           </div>
-          
-          <div class="tag-container mb-3">
-            ${c.skills.map(skill => `<span class="tag-skill">${skill}</span>`).join('')}
-          </div>
-
-          <div class="info-row mb-2">
-            <span class="info-row-label">Minat Kompetisi</span>
-            <span class="info-row-value">${c.categories.join(', ')}</span>
-          </div>
-
-          <div class="info-row mb-4">
-            <span class="info-row-label">Status Portofolio</span>
-            <span class="info-row-value text-muted d-flex align-items-center gap-2">
-              <i class="bi bi-dash-circle"></i>
-              Profil belum tersedia
-            </span>
-          </div>
-
-          <div class="mt-auto pt-2">
-            <button class="btn-disabled-muted w-100" disabled aria-disabled="true" title="Profil kandidat belum diaktifkan oleh mahasiswa">
-              <i class="bi bi-lock-fill"></i>
-              <span>Belum tersedia</span>
-            </button>
-          </div>
-        </article>
+        </div>
+        <div class="candidate-card-side">
+          <span class="candidate-badge-portfolio">Profil belum tersedia</span>
+          <button class="btn-outline-card-disabled" disabled aria-disabled="true">
+            <span>Belum tersedia</span>
+          </button>
+        </div>
       `;
     }
 
-    DOM.candidatesContainer.appendChild(col);
+    DOM.candidatesContainer.appendChild(card);
   });
 
   document.querySelectorAll('.btn-view-profile').forEach(btn => {
@@ -560,37 +550,40 @@ function renderInvitations() {
     } else {
       filtered.forEach(inv => {
         const tr = document.createElement('tr');
+        tr.className = `status-${inv.status}`;
         
         let statusBadgeHtml = '';
+        let keteranganText = '';
         if (inv.status === 'pending') {
-          statusBadgeHtml = `<span class="status-badge status-badge-pending"><i class="bi bi-clock-fill"></i> Menunggu</span>`;
+          statusBadgeHtml = `<span class="status-badge status-badge-pending"><i class="bi bi-clock"></i> Menunggu</span>`;
+          keteranganText = 'Menunggu respons';
         } else if (inv.status === 'accepted') {
-          statusBadgeHtml = `<span class="status-badge status-badge-accepted"><i class="bi bi-check-circle-fill"></i> Diterima</span>`;
+          statusBadgeHtml = `<span class="status-badge status-badge-accepted"><i class="bi bi-check-lg"></i> Diterima</span>`;
+          keteranganText = 'Peran terisi';
         } else if (inv.status === 'rejected') {
-          statusBadgeHtml = `<span class="status-badge status-badge-rejected"><i class="bi bi-x-circle-fill"></i> Ditolak</span>`;
+          statusBadgeHtml = `<span class="status-badge status-badge-rejected"><i class="bi bi-x-lg"></i> Ditolak</span>`;
+          keteranganText = 'Slot peran tetap kosong';
         }
 
         const newBadge = inv.isNew ? `<span class="badge-new ms-2">Baru</span>` : '';
 
         tr.innerHTML = `
           <td>
-            <div class="d-flex align-items-center gap-2">
-              <strong class="text-primary">${inv.candidateName}</strong>
-              ${newBadge}
+            <div class="candidate-cell-flex">
+              <div class="cell-avatar avatar-${inv.candidateId}">${inv.initials}</div>
+              <div>
+                <div class="candidate-table-name">
+                  <strong class="text-dark">${inv.candidateName}</strong>
+                  ${newBadge}
+                </div>
+                <div class="text-caption text-muted">${inv.prodi || 'Teknik Informatika'}</div>
+              </div>
             </div>
           </td>
-          <td><strong>${inv.role}</strong></td>
+          <td><span class="badge-role-lavender">${inv.role}</span></td>
           <td class="text-secondary">${inv.date}</td>
           <td>${statusBadgeHtml}</td>
-          <td>
-            ${inv.candidateId === 'alya' ? `
-              <button class="btn btn-sm btn-outline-secondary rounded-pill px-3 py-1 btn-open-profile-from-table" data-candidate-id="${inv.candidateId}">
-                Lihat Profil
-              </button>
-            ` : `
-              <span class="text-caption text-muted">Tidak ada aksi</span>
-            `}
-          </td>
+          <td class="text-secondary">${keteranganText}</td>
         `;
 
         DOM.invitationsTableBody.appendChild(tr);
@@ -609,35 +602,37 @@ function renderInvitations() {
     } else {
       filtered.forEach(inv => {
         const card = document.createElement('div');
-        card.className = `invitation-mobile-card dual-signifier-card status-${inv.status}`;
+        card.className = `invitation-mobile-card status-${inv.status}`;
         
         let statusBadgeHtml = '';
         if (inv.status === 'pending') {
-          statusBadgeHtml = `<span class="status-badge status-badge-pending"><i class="bi bi-clock-fill"></i> Menunggu</span>`;
+          statusBadgeHtml = `<span class="status-badge status-badge-pending"><i class="bi bi-clock"></i> Menunggu</span>`;
         } else if (inv.status === 'accepted') {
-          statusBadgeHtml = `<span class="status-badge status-badge-accepted"><i class="bi bi-check-circle-fill"></i> Diterima</span>`;
+          statusBadgeHtml = `<span class="status-badge status-badge-accepted"><i class="bi bi-check-lg"></i> Diterima</span>`;
         } else if (inv.status === 'rejected') {
-          statusBadgeHtml = `<span class="status-badge status-badge-rejected"><i class="bi bi-x-circle-fill"></i> Ditolak</span>`;
+          statusBadgeHtml = `<span class="status-badge status-badge-rejected"><i class="bi bi-x-lg"></i> Ditolak</span>`;
         }
 
-        const newBadge = inv.isNew ? `<span class="badge-new ms-2">Baru</span>` : '';
+        const newBadge = inv.isNew ? `<span class="badge-new">Baru</span>` : '';
 
         card.innerHTML = `
-          <div class="d-flex align-items-center justify-content-between">
-            <h4 class="mb-0 fs-6 fw-bold text-primary">${inv.candidateName} ${newBadge}</h4>
+          <div class="d-flex align-items-center justify-content-between mb-2">
+            <div class="d-flex align-items-center gap-2">
+              <div class="cell-avatar avatar-${inv.candidateId}">${inv.initials}</div>
+              <div>
+                <strong class="text-dark fs-6">${inv.candidateName}</strong>
+                <div class="text-caption text-muted">${inv.prodi || 'Teknik Informatika'}</div>
+              </div>
+            </div>
+            ${newBadge}
+          </div>
+          <div class="mb-2">
+            <span class="badge-role-lavender">Peran: ${inv.role}</span>
+          </div>
+          <div class="d-flex justify-content-between align-items-center">
+            <span class="text-caption text-muted">Dikirim: ${inv.date}</span>
             <div>${statusBadgeHtml}</div>
           </div>
-          <div class="d-flex justify-content-between align-items-center text-caption">
-            <span class="fw-semibold text-secondary">${inv.role}</span>
-            <span class="text-muted">${inv.date}</span>
-          </div>
-          ${inv.candidateId === 'alya' ? `
-            <div class="pt-2 border-top">
-              <button class="btn btn-sm btn-outline-secondary w-100 rounded-pill py-1 btn-open-profile-from-table" data-candidate-id="${inv.candidateId}">
-                Lihat Profil
-              </button>
-            </div>
-          ` : ''}
         `;
 
         DOM.invitationsMobileList.appendChild(card);
@@ -670,6 +665,7 @@ function renderTeamPositions() {
   const progressPercent = Math.round((acceptedCount / totalSlots) * 100);
   if (DOM.teamProgressBarFill) {
     DOM.teamProgressBarFill.style.width = `${progressPercent}%`;
+    DOM.teamProgressBarFill.parentElement?.setAttribute('aria-valuenow', progressPercent);
   }
 
   if (DOM.teamSlotsContainer) {
@@ -677,63 +673,50 @@ function renderTeamPositions() {
 
     slots.forEach(slot => {
       const card = document.createElement('article');
-      card.className = `position-slot-card dual-signifier-card status-${slot.status} ${slot.status === 'vacant' ? 'vacant-slot' : ''}`;
+      card.className = `position-slot-card status-${slot.status}`;
       card.setAttribute('aria-label', `Posisi ${slot.role} - Status ${slot.status}`);
 
       let statusBadge = '';
       let avatarHtml = '';
-      let detailHtml = '';
-      let actionHtml = '';
+      let infoHtml = '';
 
       if (slot.status === 'accepted') {
-        statusBadge = `<span class="status-badge status-badge-accepted"><i class="bi bi-check-circle-fill"></i> Terisi (Diterima)</span>`;
+        statusBadge = `<span class="status-badge status-badge-accepted"><i class="bi bi-check-lg"></i> Diterima</span>`;
         avatarHtml = `<div class="slot-avatar avatar-bima">${slot.initials}</div>`;
-        detailHtml = `
-          <div>
-            <div class="slot-role-name">${slot.role}</div>
-            <div class="slot-candidate-name">${slot.candidateName} &bull; ${slot.prodi}</div>
+        infoHtml = `
+          <div class="slot-info-box">
+            <strong class="slot-name">${slot.candidateName}</strong>
+            <span class="slot-sub">Undangan diterima</span>
           </div>
         `;
-        actionHtml = `<span class="text-caption text-success fw-semibold"><i class="bi bi-shield-check"></i> Anggota Resmi</span>`;
       } else if (slot.status === 'pending') {
-        statusBadge = `<span class="status-badge status-badge-pending"><i class="bi bi-clock-fill"></i> Menunggu Respons</span>`;
+        statusBadge = `<span class="status-badge status-badge-pending"><i class="bi bi-clock"></i> Menunggu</span>`;
         avatarHtml = `<div class="slot-avatar avatar-alya">${slot.initials}</div>`;
-        detailHtml = `
-          <div>
-            <div class="slot-role-name">${slot.role}</div>
-            <div class="slot-candidate-name">${slot.candidateName} &bull; ${slot.prodi}</div>
+        infoHtml = `
+          <div class="slot-info-box">
+            <strong class="slot-name">${slot.candidateName}</strong>
+            <span class="slot-sub">Undangan terkirim &bull; Belum menerima</span>
           </div>
-        `;
-        actionHtml = `
-          <button class="btn btn-sm btn-outline-warning text-dark rounded-pill px-3 py-1 btn-view-invites-from-slot">
-            Lihat Status
-          </button>
         `;
       } else {
-        statusBadge = `<span class="status-badge status-badge-vacant"><i class="bi bi-dash-circle"></i> Posisi Kosong</span>`;
-        avatarHtml = `<div class="slot-avatar" style="background:#EFEAF5; color:#625173;"><i class="bi bi-person-plus-fill"></i></div>`;
-        detailHtml = `
-          <div>
-            <div class="slot-role-name">${slot.role}</div>
-            <div class="slot-candidate-name text-muted">Belum ada kandidat yang terpilih atau diundang</div>
+        statusBadge = `<span class="status-badge status-badge-vacant"><i class="bi bi-dash-circle"></i> Kosong</span>`;
+        avatarHtml = `<div class="slot-avatar avatar-empty"><i class="bi bi-dash-lg"></i></div>`;
+        infoHtml = `
+          <div class="slot-info-box">
+            <strong class="slot-name">Belum ada kandidat</strong>
+            <span class="slot-sub">Belum ada kandidat yang ditugaskan</span>
           </div>
-        `;
-        actionHtml = `
-          <button class="btn-cta-cyan btn-sm btn-fill-vacant-slot" data-role="${slot.role}">
-            <i class="bi bi-plus-lg"></i>
-            <span>Cari Kandidat</span>
-          </button>
         `;
       }
 
       card.innerHTML = `
-        <div class="slot-info-group">
-          ${avatarHtml}
-          ${detailHtml}
+        <div class="slot-role-box">
+          <span>${slot.role}</span>
         </div>
-        <div class="d-flex align-items-center gap-3">
+        ${avatarHtml}
+        ${infoHtml}
+        <div class="slot-status-box ms-auto">
           ${statusBadge}
-          ${actionHtml}
         </div>
       `;
 
@@ -753,12 +736,14 @@ function renderTeamPositions() {
           DOM.searchInput.value = '';
           DOM.searchInput.focus();
         }
-        APP_STATE.activeCategory = 'Semua';
+        APP_STATE.activeCategory = 'Hackathon';
         DOM.categoryChips.forEach(chip => {
-          if (chip.getAttribute('data-category') === 'Semua') {
+          if (chip.getAttribute('data-category') === APP_STATE.activeCategory) {
             chip.classList.add('active');
+            chip.setAttribute('aria-selected', 'true');
           } else {
             chip.classList.remove('active');
+            chip.setAttribute('aria-selected', 'false');
           }
         });
         navigateToScreen('screen-dashboard');
@@ -818,13 +803,19 @@ function initEventListeners() {
   if (DOM.resetSearchBtn) {
     DOM.resetSearchBtn.addEventListener('click', () => {
       APP_STATE.searchQuery = '';
+      APP_STATE.filterProdi = [];
+      APP_STATE.filterSkills = [];
       if (DOM.searchInput) DOM.searchInput.value = '';
-      APP_STATE.activeCategory = 'Semua';
+      document.querySelectorAll('input[name="filterProdi"], input[name="filterSkill"]')
+        .forEach(input => input.checked = false);
+      APP_STATE.activeCategory = 'Hackathon';
       DOM.categoryChips.forEach(chip => {
-        if (chip.getAttribute('data-category') === 'Semua') {
+        if (chip.getAttribute('data-category') === APP_STATE.activeCategory) {
           chip.classList.add('active');
+          chip.setAttribute('aria-selected', 'true');
         } else {
           chip.classList.remove('active');
+          chip.setAttribute('aria-selected', 'false');
         }
       });
       renderCandidates();
@@ -833,20 +824,16 @@ function initEventListeners() {
 
   DOM.categoryChips.forEach(chip => {
     chip.addEventListener('click', () => {
-      DOM.categoryChips.forEach(c => c.classList.remove('active'));
+      DOM.categoryChips.forEach(c => {
+        c.classList.remove('active');
+        c.setAttribute('aria-selected', 'false');
+      });
       chip.classList.add('active');
+      chip.setAttribute('aria-selected', 'true');
       APP_STATE.activeCategory = chip.getAttribute('data-category');
       renderCandidates();
     });
   });
-
-  const btnNotification = document.getElementById('btnNotification');
-  if (btnNotification) {
-    btnNotification.addEventListener('click', (e) => {
-      e.preventDefault();
-      navigateToScreen('screen-invitations');
-    });
-  }
 
   const backBtn = document.getElementById('btnBackToDashboard');
   if (backBtn) {
@@ -971,7 +958,9 @@ document.addEventListener('DOMContentLoaded', async () => {
   await loadAllScreens();
   initDOMElements();
   initEventListeners();
-  renderCandidates();
-  renderInvitations();
-  renderTeamPositions();
+  navigateToScreen(getScreenFromLocation(), false);
+});
+
+window.addEventListener('popstate', () => {
+  navigateToScreen(getScreenFromLocation(), false);
 });

@@ -18,38 +18,29 @@
   <header class="app-header">
     <div class="container d-flex align-items-center justify-content-between py-2">
       <a href="#" class="brand-title" id="brandLogo">
-        <i class="bi bi-compass-fill text-primary fs-4"></i>
         <span>FILKOM Team Finder</span>
-        <span class="brand-badge d-none d-sm-inline-block">UB</span>
       </a>
 
+      <!-- Navigasi desktop: tanpa ikon simbol -->
       <nav class="d-none d-md-flex align-items-center gap-2" aria-label="Navigasi Utama">
         <button class="nav-tab-btn active" data-target-screen="screen-dashboard" aria-current="page">
-          <i class="bi bi-search"></i>
           <span>Cari Kandidat</span>
         </button>
         <button class="nav-tab-btn" data-target-screen="screen-invitations">
-          <i class="bi bi-envelope-paper"></i>
           <span>Undangan</span>
           <span class="nav-badge-pill" id="unreadBadgeCount">2</span>
         </button>
         <button class="nav-tab-btn" data-target-screen="screen-team">
-          <i class="bi bi-people-fill"></i>
           <span>Tim Saya</span>
         </button>
       </nav>
 
       <div class="d-flex align-items-center gap-3">
-        <button class="icon-button position-relative" id="btnNotification" aria-label="Notifikasi" title="Notifikasi Baru">
+        <span class="icon-button notification-indicator" aria-label="Notifikasi" title="Notifikasi">
           <i class="bi bi-bell"></i>
-          <span class="notification-dot"></span>
-        </button>
-        <div class="d-flex align-items-center gap-2">
-          <div class="user-avatar-btn" title="Rizal - Akun Mahasiswa">R</div>
-          <div class="d-none d-lg-block text-start">
-            <div class="fw-bold fs-6 lh-1">Rizal</div>
-            <span class="text-caption text-muted">Ketua Tim</span>
-          </div>
+        </span>
+        <div class="d-flex align-items-center">
+          <div class="user-avatar-btn" title="Rizal — Ketua Tim">R</div>
         </div>
       </div>
     </div>
@@ -62,21 +53,20 @@
   <nav class="mobile-bottom-nav" aria-label="Navigasi Bawah Seluler">
     <button class="bottom-nav-item active" data-target-screen="screen-dashboard" aria-current="page">
       <i class="bi bi-search"></i>
-      <span>Cari</span>
+      <span>Cari Kandidat</span>
     </button>
     <button class="bottom-nav-item" data-target-screen="screen-invitations">
-      <i class="bi bi-envelope-paper"></i>
+      <i class="bi bi-envelope"></i>
       <span>Undangan</span>
     </button>
     <button class="bottom-nav-item" data-target-screen="screen-team">
-      <i class="bi bi-people-fill"></i>
+      <i class="bi bi-people"></i>
       <span>Tim Saya</span>
     </button>
   </nav>
 
   <div id="toastContainer" class="toast-container-custom" aria-live="polite"></div>
 
-  <script src="screens/screens-cache.js"></script>
   <script src="js/app.js"></script>
 </body>
 </html>

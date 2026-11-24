@@ -1,75 +1,92 @@
 <section id="screen-dashboard" class="screen-section active" aria-labelledby="dashboardHeroTitle">
-  <div class="hero-banner">
+  <div class="hero-banner hero-banner-unified mb-4">
     <div class="row align-items-center">
       <div class="col-12 col-md-8">
         <h1 id="dashboardHeroTitle" class="hero-title">
           Halo, <span class="hero-title-accent">Rizal!</span>
         </h1>
-        <p>Temukan partner terbaik untuk kompetisi berikutnya dengan kecocokan keahlian terverifikasi.</p>
+        <p class="hero-subtitle">Temukan partner terbaik untuk kompetisi berikutnya.</p>
+
       </div>
-      <div class="col-md-4 d-none d-md-block text-end">
-        <svg class="hero-illustration" width="130" height="90" viewBox="0 0 130 90" fill="none" xmlns="http://www.w3.org/2000/svg">
-          <circle cx="35" cy="45" r="28" fill="#FDFF94" fill-opacity="0.3"/>
-          <circle cx="85" cy="40" r="38" fill="#70E2F9" fill-opacity="0.25"/>
-          <path d="M45 55L65 32L85 55H45Z" fill="#FDFF94"/>
-          <circle cx="65" cy="22" r="8" fill="#FDFF94"/>
+      <div class="col-md-4 d-none d-md-block text-center position-relative">
+        <svg class="hero-illustration" width="200" height="150" viewBox="0 0 200 150" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <!-- Concentric wave rings -->
+          <circle cx="150" cy="75" r="70" stroke="rgba(255,255,255,0.15)" stroke-width="2"/>
+          <circle cx="150" cy="75" r="95" stroke="rgba(255,255,255,0.12)" stroke-width="2"/>
+          <circle cx="150" cy="75" r="120" stroke="rgba(255,255,255,0.08)" stroke-width="2"/>
+          
+          <!-- Teammate 1 (Left) -->
+          <g transform="translate(45, 45)">
+            <rect x="0" y="24" width="34" height="32" rx="10" fill="#C8F5EA" stroke="#241B42" stroke-width="2"/>
+            <circle cx="17" cy="14" r="11" fill="#FDFF94" stroke="#241B42" stroke-width="2"/>
+            <path d="M10 11C10 6 24 6 24 11" stroke="#241B42" stroke-width="2" stroke-linecap="round"/>
+          </g>
+
+          <!-- Teammate 3 (Right) -->
+          <g transform="translate(120, 45)">
+            <rect x="0" y="24" width="34" height="32" rx="10" fill="#DCCFFF" stroke="#241B42" stroke-width="2"/>
+            <circle cx="17" cy="14" r="11" fill="#FDFF94" stroke="#241B42" stroke-width="2"/>
+            <path d="M10 11C10 6 24 6 24 11" stroke="#241B42" stroke-width="2" stroke-linecap="round"/>
+          </g>
+
+          <!-- Teammate 2 (Center - Leader with Trophy) -->
+          <g transform="translate(80, 30)">
+            <rect x="2" y="30" width="36" height="38" rx="12" fill="#70E2F9" stroke="#241B42" stroke-width="2.5"/>
+            <circle cx="20" cy="16" r="13" fill="#FFFFFF" stroke="#241B42" stroke-width="2.5"/>
+            <path d="M12 14C12 7 28 7 28 14" stroke="#241B42" stroke-width="2.5" stroke-linecap="round"/>
+            <!-- Trophy -->
+            <path d="M14 42H26L24 54H16L14 42Z" fill="#FDFF94" stroke="#241B42" stroke-width="2"/>
+            <path d="M12 44C9 44 9 50 14 50" stroke="#241B42" stroke-width="1.8"/>
+            <path d="M28 44C31 44 31 50 26 50" stroke="#241B42" stroke-width="1.8"/>
+            <rect x="17" y="54" width="6" height="4" fill="#FDFF94" stroke="#241B42" stroke-width="1.5"/>
+            <rect x="13" y="58" width="14" height="4" rx="2" fill="#241B42"/>
+          </g>
+          <!-- Lightning spark -->
+          <path d="M124 25L120 32H126L122 40L130 30H124L127 25Z" fill="#FDFF94" stroke="#241B42" stroke-width="1"/>
         </svg>
       </div>
     </div>
-  </div>
-
-  <div class="search-container">
-    <label for="candidateSearchInput" class="search-label">Cari Kandidat</label>
-    <div class="search-input-group">
-      <div class="search-input-wrapper">
-        <i class="bi bi-search" aria-hidden="true"></i>
-        <input type="text" id="candidateSearchInput" class="search-input" placeholder="Cari nama kandidat, keahlian (UI/UX, Python), atau prodi..." autocomplete="off">
+    <div class="hero-search-embedded">
+      <label for="candidateSearchInput" class="hero-search-label">Cari Kandidat</label>
+      <div class="search-input-group">
+        <div class="search-input-wrapper">
+          <i class="bi bi-search" aria-hidden="true"></i>
+          <input type="text" id="candidateSearchInput" class="search-input" placeholder="Cari nama, keahlian, atau kompetensi..." autocomplete="off">
+        </div>
+        <button type="button" class="btn-filter-trigger" id="btnOpenFilterModal" aria-haspopup="dialog">
+          <i class="bi bi-sliders"></i>
+          <span>Filter</span>
+        </button>
       </div>
-      <button type="button" class="btn-filter-trigger" id="btnOpenFilterModal" aria-haspopup="dialog">
-        <i class="bi bi-sliders"></i>
-        <span>Filter</span>
-      </button>
+      <p class="search-helper-text">
+        <span>Cari kandidat berdasarkan nama, keahlian, atau kompetensi.</span>
+      </p>
     </div>
-    <p class="search-helper-text">
-      <i class="bi bi-info-circle"></i>
-      <span>Gunakan kata kunci keahlian spesifik atau minat lomba untuk pencarian akurat.</span>
-    </p>
   </div>
 
-  <div class="row">
-    <aside class="col-12 col-lg-3 mb-4 mb-lg-0">
+  <div class="row g-4">
+    <aside class="col-12 col-lg-3">
       <div class="category-sidebar">
-        <h2 class="filter-sidebar-title">
-          <i class="bi bi-grid-fill text-primary"></i>
-          <span>Kategori Kompetisi</span>
-        </h2>
+        <h2 class="filter-sidebar-title">Kategori Kompetisi</h2>
         <div class="category-chip-group" role="tablist" aria-label="Filter Kategori">
-          <button class="category-chip active" data-category="Semua" role="tab" aria-selected="true">
-            <span>Semua Kategori</span>
-            <span class="category-count">2</span>
-          </button>
-          <button class="category-chip" data-category="Hackathon" role="tab" aria-selected="false">
+          <button class="category-chip active" data-category="Hackathon" role="tab" aria-selected="true">
             <span>Hackathon</span>
-            <span class="category-count">2</span>
           </button>
           <button class="category-chip" data-category="CTF" role="tab" aria-selected="false">
-            <span>CTF (Cyber Security)</span>
-            <span class="category-count">1</span>
+            <span>CTF</span>
           </button>
           <button class="category-chip" data-category="Business Plan" role="tab" aria-selected="false">
             <span>Business Plan</span>
-            <span class="category-count">1</span>
           </button>
           <button class="category-chip" data-category="Other" role="tab" aria-selected="false">
             <span>Other</span>
-            <span class="category-count">0</span>
           </button>
         </div>
       </div>
     </aside>
 
     <section class="col-12 col-lg-9" aria-labelledby="candidatesCountLabel">
-      <div class="candidates-header">
+      <div class="candidates-header mb-3">
         <h2 id="candidatesCountLabel" class="candidates-count-title">Semua kandidat (2)</h2>
       </div>
 
@@ -92,7 +109,7 @@
         </button>
       </div>
 
-      <div id="candidatesListContainer" class="row">
+      <div id="candidatesListContainer" class="d-flex flex-column gap-3">
       </div>
     </section>
   </div>

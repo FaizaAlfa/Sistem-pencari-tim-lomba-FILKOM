@@ -1,46 +1,43 @@
 <section id="screen-profile" class="screen-section d-none" aria-labelledby="profileCandidateName">
-  <div>
-    <a href="#" class="back-nav-btn" id="btnBackToDashboard">
+  <div class="mb-3">
+    <button class="back-nav-btn" id="btnBackToDashboard">
       <i class="bi bi-arrow-left"></i>
-      <span class="d-none d-md-inline">&larr; Cari Kandidat</span>
-      <span class="d-inline d-md-none">&larr; Profil Kandidat</span>
-    </a>
+      <span>Cari Kandidat</span>
+    </button>
   </div>
+
+  <h1 class="h2 d-none d-md-block mb-4 fw-bold">Profil Kandidat</h1>
 
   <div class="row g-4">
     <aside class="col-12 col-lg-4">
       <div class="profile-card-aside">
-        <div class="profile-avatar-large" aria-hidden="true">AP</div>
-        <h2 id="profileCandidateName">Alya Putri</h2>
-        <div class="profile-sub">Teknik Informatika &bull; Semester 5</div>
+        <div class="profile-identity">
+          <div class="profile-avatar-large" aria-hidden="true">AP</div>
+          <div>
+            <h2 id="profileCandidateName" class="profile-name">Alya Putri</h2>
+            <div class="profile-sub">Teknik Informatika &bull; Semester 5</div>
+          </div>
+        </div>
         
-        <p class="text-light" style="font-size: 14px; opacity: 0.95;">
-          Mahasiswa Teknik Informatika peminatan Human-Computer Interaction & UI/UX Design dengan pengalaman riset pengguna dan perancangan prototipe web/mobile.
+        <p class="profile-bio-text">
+          Saya tertarik pada desain produk digital, riset pengguna, dan kolaborasi tim untuk kompetisi inovasi.
         </p>
 
-        <div class="profile-section-title">Keahlian Utama</div>
-        <div class="profile-tag-group">
+        <div class="profile-section-title">Keahlian</div>
+        <div class="profile-tag-group mb-3">
           <span class="profile-tag-pill">UI/UX</span>
           <span class="profile-tag-pill">Figma</span>
           <span class="profile-tag-pill">Riset UX</span>
-          <span class="profile-tag-pill">Wireframing</span>
         </div>
 
         <div class="profile-section-title">Minat Kompetisi</div>
-        <div class="profile-tag-group">
+        <div class="profile-tag-group mb-4">
           <span class="profile-tag-pill">Hackathon</span>
           <span class="profile-tag-pill">Business Plan</span>
         </div>
 
-        <div class="profile-section-title">Indeks Prestasi Kumulatif</div>
-        <div class="d-flex align-items-center gap-2 mb-4">
-          <span class="stat-number text-white">3.88</span>
-          <span class="text-caption text-light">/ 4.00</span>
-        </div>
-
         <div class="pt-2">
           <button class="btn-cta-cyan w-100 py-3 fs-6" id="btnOpenInviteModal">
-            <i class="bi bi-send-fill"></i>
             <span>Undang ke Tim</span>
           </button>
         </div>
@@ -49,63 +46,69 @@
 
     <section class="col-12 col-lg-8" aria-labelledby="portfolioSectionTitle">
       <div class="d-flex align-items-center justify-content-between mb-3">
-        <h2 id="portfolioSectionTitle" class="h2 mb-0">Portofolio & Pengalaman</h2>
-        <span class="badge bg-white text-primary border px-3 py-2 rounded-pill fw-semibold">
-          <i class="bi bi-award-fill text-warning me-1"></i> Terverifikasi
-        </span>
+        <h2 id="portfolioSectionTitle" class="h2 mb-0">Portofolio</h2>
       </div>
 
-      <article class="portfolio-card-purple" aria-labelledby="portTitle1">
-        <div class="portfolio-header">
-          <h3 id="portTitle1" class="portfolio-title">KantinKu — Prototipe Aplikasi</h3>
-          <span class="portfolio-status-link">
-            <i class="bi bi-box-arrow-up-right"></i>
-            <span>Prototipe Figma</span>
-          </span>
-        </div>
-        <p style="color: #4A257B; margin-bottom: 12px;">
-          Perancangan antarmuka dan alur pemesanan makanan kantin FILKOM secara daring untuk mengatasi penumpukan antrean pada jam istirahat. Menggunakan metodologi Design Thinking.
-        </p>
-        <div class="portfolio-preview-box">
-          <div class="portfolio-icon-box">
-            <i class="bi bi-phone"></i>
+      <article class="portfolio-card-purple mb-3" aria-labelledby="portTitle1">
+        <div class="row align-items-center">
+          <div class="col-12 col-md-8">
+            <h3 id="portTitle1" class="portfolio-title">KantinKu — Prototipe Aplikasi</h3>
+            <p class="portfolio-desc">
+              Desain pemesanan kantin kampus berdasarkan kebutuhan mahasiswa.
+            </p>
+            <div class="pt-2">
+              <span class="portfolio-pill-btn">Belum tersedia</span>
+            </div>
           </div>
-          <div>
-            <strong class="d-block text-dark">Mobile Application Design & Flow</strong>
-            <span style="font-size: 13px; color: #58338C;">24 Layar Antarmuka, Design System, & Interactive High-Fidelity Prototype</span>
+          <div class="col-12 col-md-4 text-center d-none d-md-block">
+            <svg width="100" height="100" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <rect x="20" y="10" width="46" height="74" rx="8" fill="#DCCFFF" stroke="#241B42" stroke-width="2.5"/>
+              <rect x="28" y="16" width="30" height="12" rx="4" fill="#70E2F9" stroke="#241B42" stroke-width="1.5"/>
+              <circle cx="35" cy="36" r="4" fill="#FDFF94" stroke="#241B42" stroke-width="1.5"/>
+              <path d="M48 34L53 42H43L48 34Z" fill="#FFE4E5" stroke="#241B42" stroke-width="1.5"/>
+              <!-- Food bowl -->
+              <path d="M42 55C42 66 68 66 68 55H42Z" fill="#FFE4E5" stroke="#241B42" stroke-width="2"/>
+              <path d="M40 55H70" stroke="#241B42" stroke-width="2"/>
+              <circle cx="55" cy="52" r="5" fill="#C8F5EA"/>
+              <circle cx="60" cy="50" r="4" fill="#FDFF94"/>
+              <!-- Spoon -->
+              <path d="M68 40L60 55" stroke="#241B42" stroke-width="2.5" stroke-linecap="round"/>
+              <ellipse cx="69" cy="38" rx="4" ry="6" fill="#241B42"/>
+              <!-- Sparkles -->
+              <path d="M78 20L76 24L80 24L78 28L80 24L84 24L80 20Z" fill="#FDFF94"/>
+            </svg>
           </div>
-        </div>
-        <div class="d-flex flex-wrap gap-2 pt-1">
-          <span class="badge bg-white text-dark border rounded-pill">UI/UX Mobile</span>
-          <span class="badge bg-white text-dark border rounded-pill">User Flow</span>
-          <span class="badge bg-white text-dark border rounded-pill">Design System</span>
         </div>
       </article>
 
       <article class="portfolio-card-mint" aria-labelledby="portTitle2">
-        <div class="portfolio-header">
-          <h3 id="portTitle2" class="portfolio-title">Riset UX — Perpustakaan Digital</h3>
-          <span class="portfolio-status-link">
-            <i class="bi bi-file-earmark-text"></i>
-            <span>Laporan Usability</span>
-          </span>
-        </div>
-        <p style="color: #175F52; margin-bottom: 12px;">
-          Pengujian kegunaan (usability testing) pada platform katalog daring perpustakaan dengan metode System Usability Scale (SUS) bersama 15 mahasiswa sebagai partisipan.
-        </p>
-        <div class="portfolio-preview-box">
-          <div class="portfolio-icon-box">
-            <i class="bi bi-journal-check"></i>
+        <div class="row align-items-center">
+          <div class="col-12 col-md-8">
+            <h3 id="portTitle2" class="portfolio-title">Riset UX — Perpustakaan Digital</h3>
+            <p class="portfolio-desc">
+              Wawancara pengguna dan uji kegunaan untuk alur pencarian buku.
+            </p>
+            <div class="pt-2">
+              <span class="portfolio-pill-btn">Belum tersedia</span>
+            </div>
           </div>
-          <div>
-            <strong class="d-block text-dark">Usability Evaluation & Insight Report</strong>
-            <span style="font-size: 13px; color: #206E60;">Peningkatan skor SUS dari 58 (Marginal) menjadi 82 (Excellent) pada rekomendasi desain</span>
+          <div class="col-12 col-md-4 text-center d-none d-md-block">
+            <svg width="100" height="100" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <!-- Book -->
+              <path d="M22 65C34 60 48 65 48 65V30C48 30 34 25 22 30V65Z" fill="#FFFFFF" stroke="#241B42" stroke-width="2.5"/>
+              <path d="M48 65C48 65 62 60 74 65V30C62 25 48 30 48 30V65Z" fill="#FFFFFF" stroke="#241B42" stroke-width="2.5"/>
+              <path d="M48 30V65" stroke="#241B42" stroke-width="2.5"/>
+              <line x1="26" y1="38" x2="42" y2="38" stroke="#625870" stroke-width="2" stroke-linecap="round"/>
+              <line x1="26" y1="46" x2="42" y2="46" stroke="#625870" stroke-width="2" stroke-linecap="round"/>
+              <line x1="26" y1="54" x2="38" y2="54" stroke="#625870" stroke-width="2" stroke-linecap="round"/>
+              <!-- Magnifying glass -->
+              <circle cx="64" cy="46" r="12" fill="#70E2F9" stroke="#241B42" stroke-width="2.5"/>
+              <line x1="73" y1="55" x2="84" y2="66" stroke="#241B42" stroke-width="3" stroke-linecap="round"/>
+              <!-- Note pills on top -->
+              <rect x="22" y="14" width="18" height="14" rx="4" fill="#DCCFFF" stroke="#241B42" stroke-width="1.8"/>
+              <rect x="52" y="12" width="18" height="14" rx="4" fill="#C8F5EA" stroke="#241B42" stroke-width="1.8"/>
+            </svg>
           </div>
-        </div>
-        <div class="d-flex flex-wrap gap-2 pt-1">
-          <span class="badge bg-white text-dark border rounded-pill">Riset UX</span>
-          <span class="badge bg-white text-dark border rounded-pill">Usability Testing</span>
-          <span class="badge bg-white text-dark border rounded-pill">SUS Metrik</span>
         </div>
       </article>
     </section>

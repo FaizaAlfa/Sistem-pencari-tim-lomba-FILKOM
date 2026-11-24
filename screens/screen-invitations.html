@@ -1,47 +1,47 @@
 <section id="screen-invitations" class="screen-section d-none" aria-labelledby="invitationsScreenTitle">
-  <div class="d-flex align-items-center justify-content-between mb-4">
-    <div>
-      <h1 id="invitationsScreenTitle" class="h1 mb-1">Status & Undangan</h1>
-      <p class="mb-0">Pantau proses rekrutmen anggota tim lomba secara real-time.</p>
+  <div class="invitations-banner-container mb-4">
+    <h1 id="invitationsScreenTitle" class="invitations-banner-title">Undangan</h1>
+
+    <div class="summary-cards-grid mt-3">
+      <div class="summary-card status-pending-card">
+        <div class="summary-card-inner">
+          <div class="summary-stat-group">
+            <span class="summary-big-num" id="countPending">2</span>
+            <span class="summary-label">Menunggu</span>
+          </div>
+          <div class="summary-icon-box">
+            <i class="bi bi-clock"></i>
+          </div>
+        </div>
+      </div>
+
+      <div class="summary-card status-accepted-card">
+        <div class="summary-card-inner">
+          <div class="summary-stat-group">
+            <span class="summary-big-num" id="countAccepted">1</span>
+            <span class="summary-label">Diterima</span>
+          </div>
+          <div class="summary-icon-box">
+            <i class="bi bi-check-lg"></i>
+          </div>
+        </div>
+      </div>
+
+      <div class="summary-card status-rejected-card">
+        <div class="summary-card-inner">
+          <div class="summary-stat-group">
+            <span class="summary-big-num" id="countRejected">1</span>
+            <span class="summary-label">Ditolak</span>
+          </div>
+          <div class="summary-icon-box">
+            <i class="bi bi-x-lg"></i>
+          </div>
+        </div>
+      </div>
     </div>
   </div>
 
-  <div class="summary-cards-grid">
-    <div class="summary-card dual-signifier-card status-pending">
-      <div class="summary-card-header">
-        <span class="summary-card-title">Menunggu</span>
-        <div class="summary-icon-pill status-badge-pending">
-          <i class="bi bi-clock-fill"></i>
-        </div>
-      </div>
-      <div class="stat-number text-dark" id="countPending">2</div>
-      <span class="text-caption text-muted mt-2">Menunggu konfirmasi mahasiswa</span>
-    </div>
-
-    <div class="summary-card dual-signifier-card status-accepted">
-      <div class="summary-card-header">
-        <span class="summary-card-title">Diterima</span>
-        <div class="summary-icon-pill status-badge-accepted">
-          <i class="bi bi-check-circle-fill"></i>
-        </div>
-      </div>
-      <div class="stat-number text-dark" id="countAccepted">1</div>
-      <span class="text-caption text-muted mt-2">Telah bergabung dengan tim</span>
-    </div>
-
-    <div class="summary-card dual-signifier-card status-rejected">
-      <div class="summary-card-header">
-        <span class="summary-card-title">Ditolak</span>
-        <div class="summary-icon-pill status-badge-rejected">
-          <i class="bi bi-x-circle-fill"></i>
-        </div>
-      </div>
-      <div class="stat-number text-dark" id="countRejected">1</div>
-      <span class="text-caption text-muted mt-2">Kandidat menolak undangan</span>
-    </div>
-  </div>
-
-  <div class="status-update-banner" id="statusUpdateBanner" role="status">
+  <div class="status-update-banner d-none" id="statusUpdateBanner" role="status">
     <div class="status-update-text">
       <i class="bi bi-bell-fill fs-5"></i>
       <span><strong id="statusUpdateCountText">2 pembaruan status</strong> rekrutmen belum ditinjau oleh Anda.</span>
@@ -51,22 +51,30 @@
     </button>
   </div>
 
-  <div class="status-filter-tabs" role="tablist" aria-label="Filter Status Undangan">
-    <button class="status-tab-btn active" data-status="Semua" role="tab" aria-selected="true">Semua</button>
-    <button class="status-tab-btn" data-status="Menunggu" role="tab" aria-selected="false">Menunggu</button>
-    <button class="status-tab-btn" data-status="Diterima" role="tab" aria-selected="false">Diterima</button>
-    <button class="status-tab-btn" data-status="Ditolak" role="tab" aria-selected="false">Ditolak</button>
+  <div class="status-filter-tabs mb-4" role="tablist" aria-label="Filter Status Undangan">
+    <button class="status-tab-btn tab-semua active" data-status="Semua" role="tab" aria-selected="true">
+      <span>Semua</span>
+    </button>
+    <button class="status-tab-btn tab-menunggu" data-status="Menunggu" role="tab" aria-selected="false">
+      <span>Menunggu</span>
+    </button>
+    <button class="status-tab-btn tab-diterima" data-status="Diterima" role="tab" aria-selected="false">
+      <span>Diterima</span>
+    </button>
+    <button class="status-tab-btn tab-ditolak" data-status="Ditolak" role="tab" aria-selected="false">
+      <span>Ditolak</span>
+    </button>
   </div>
 
-  <div class="invitation-table-container">
+  <div class="invitation-table-container d-none d-md-block">
     <table class="invitation-table" aria-label="Daftar Undangan Kandidat">
       <thead>
         <tr>
-          <th scope="col">Kandidat</th>
-          <th scope="col">Peran / Posisi</th>
-          <th scope="col">Tanggal Kirim</th>
-          <th scope="col">Status</th>
-          <th scope="col">Aksi</th>
+          <th scope="col" style="width: 28%;">Kandidat</th>
+          <th scope="col" style="width: 22%;">Peran</th>
+          <th scope="col" style="width: 16%;">Dikirim</th>
+          <th scope="col" style="width: 16%;">Status</th>
+          <th scope="col" style="width: 18%;">Keterangan</th>
         </tr>
       </thead>
       <tbody id="invitationsTableBody">
@@ -74,6 +82,6 @@
     </table>
   </div>
 
-  <div class="mobile-stacked-cards" id="invitationsMobileList" aria-label="Daftar Undangan Kandidat Versi Mobile">
+  <div class="mobile-stacked-cards d-block d-md-none" id="invitationsMobileList" aria-label="Daftar Undangan Kandidat Versi Mobile">
   </div>
 </section>
