@@ -1,0 +1,59 @@
+<section id="screen-team" class="screen-section d-none" aria-labelledby="teamScreenTitle">
+  <div class="d-flex align-items-center justify-content-between mb-4">
+    <div>
+      <h1 id="teamScreenTitle" class="h1 mb-1">Manajemen Tim</h1>
+      <p class="mb-0">Kelola komposisi peran dan kesiapan tim lomba Anda.</p>
+    </div>
+  </div>
+
+  <div class="row g-4">
+    <aside class="col-12 col-lg-4">
+      <div class="team-aside-card">
+        <span class="team-badge-pill">Kategori kompetisi: Hackathon</span>
+        <h2>Tim Nalar</h2>
+        <p>
+          Fokus pada pengembangan solusi digital inovatif untuk kebutuhan sivitas akademika FILKOM UB.
+        </p>
+
+        <div class="mb-4">
+          <div class="text-caption text-light mb-1">Target Kompetisi</div>
+          <strong class="text-white">Gemastik / Hackathon Nasional 2026</strong>
+        </div>
+
+        <button class="btn-cta-cyan w-100 py-3" id="btnViewInvitationsFromTeam">
+          <i class="bi bi-envelope-paper-fill"></i>
+          <span>Lihat Undangan</span>
+        </button>
+      </div>
+    </aside>
+
+    <section class="col-12 col-lg-8" aria-labelledby="progressTitle">
+      <div class="team-progress-card">
+        <div class="team-progress-header">
+          <div>
+            <h3 id="progressTitle" class="h3 mb-1">Progres Pembentukan Tim</h3>
+            <div class="fw-bold fs-5 text-primary" id="teamProgressText">1 dari 3 posisi terisi</div>
+          </div>
+          <div class="d-flex gap-2">
+            <span class="badge status-badge-accepted"><span id="teamFilledCount">1</span> Terisi</span>
+            <span class="badge status-badge-pending"><span id="teamPendingCount">1</span> Menunggu</span>
+            <span class="badge status-badge-vacant"><span id="teamVacantCount">1</span> Kosong</span>
+          </div>
+        </div>
+
+        <div class="progress-bar-custom" role="progressbar" aria-valuenow="33" aria-valuemin="0" aria-valuemax="100">
+          <div class="progress-fill-custom" id="teamProgressBarFill" style="width: 33%;"></div>
+        </div>
+
+        <p class="progress-note">
+          <i class="bi bi-info-circle-fill text-muted"></i>
+          <span>Menunggu belum dihitung sebagai posisi terisi.</span>
+        </p>
+      </div>
+
+      <h3 class="h3 mb-3">Anggota dan Posisi Tim</h3>
+      <div class="positions-container" id="teamSlotsContainer">
+      </div>
+    </section>
+  </div>
+</section>

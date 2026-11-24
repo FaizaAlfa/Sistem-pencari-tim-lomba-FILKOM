@@ -1,10 +1,3 @@
-/**
- * FILKOM Team Finder - Interactive Single Page Application (SPA)
- * Vanilla JavaScript (ES6+) Implementation
- */
-
-// 1. Data Models & Initial State
-
 const APP_STATE = {
   currentScreen: 'screen-dashboard', 
   activeCategory: 'Semua',
@@ -14,7 +7,6 @@ const APP_STATE = {
   invitationStatusFilter: 'Semua',
   unreadUpdates: 2,
   
-  // Data Kandidat
   candidates: [
     {
       id: 'alya',
@@ -67,7 +59,6 @@ const APP_STATE = {
     }
   ],
 
-  // Data Undangan Awal
   invitations: [
     {
       id: 'inv-1',
@@ -111,7 +102,6 @@ const APP_STATE = {
     }
   ],
 
-  // Data Posisi Tim Saya
   team: {
     name: 'Tim Nalar',
     competition: 'Kategori kompetisi: Hackathon',
@@ -145,91 +135,124 @@ const APP_STATE = {
   }
 };
 
-// 2. DOM Elements Selection
-
 const DOM = {
-  screens: {
+  screens: {}
+};
+
+function initDOMElements() {
+  DOM.screens = {
     dashboard: document.getElementById('screen-dashboard'),
     profile: document.getElementById('screen-profile'),
     invitations: document.getElementById('screen-invitations'),
     team: document.getElementById('screen-team')
-  },
+  };
   
-  // Navigation elements
-  navTabs: document.querySelectorAll('[data-target-screen]'),
-  unreadBadge: document.getElementById('unreadBadgeCount'),
+  DOM.navTabs = document.querySelectorAll('[data-target-screen]');
+  DOM.unreadBadge = document.getElementById('unreadBadgeCount');
   
-  // Dashboard & Search Elements
-  searchInput: document.getElementById('candidateSearchInput'),
-  candidatesContainer: document.getElementById('candidatesListContainer'),
-  candidatesCountLabel: document.getElementById('candidatesCountLabel'),
-  categoryChips: document.querySelectorAll('.category-chip'),
-  loadingSpinner: document.getElementById('candidatesLoadingSpinner'),
-  emptyState: document.getElementById('candidatesEmptyState'),
-  emptyStateQueryText: document.getElementById('emptyStateQueryText'),
-  resetSearchBtn: document.getElementById('btnResetSearch'),
+  DOM.searchInput = document.getElementById('candidateSearchInput');
+  DOM.candidatesContainer = document.getElementById('candidatesListContainer');
+  DOM.candidatesCountLabel = document.getElementById('candidatesCountLabel');
+  DOM.categoryChips = document.querySelectorAll('.category-chip');
+  DOM.loadingSpinner = document.getElementById('candidatesLoadingSpinner');
+  DOM.emptyState = document.getElementById('candidatesEmptyState');
+  DOM.emptyStateQueryText = document.getElementById('emptyStateQueryText');
+  DOM.resetSearchBtn = document.getElementById('btnResetSearch');
 
-  // Filter Modal Elements
-  btnOpenFilterModal: document.getElementById('btnOpenFilterModal'),
-  filterDialog: document.getElementById('filterDialog'),
-  btnCloseFilterDialog: document.getElementById('btnCloseFilterDialog'),
-  btnApplyFilters: document.getElementById('btnApplyFilters'),
-  btnResetFilters: document.getElementById('btnResetFilters'),
+  DOM.btnOpenFilterModal = document.getElementById('btnOpenFilterModal');
+  DOM.filterDialog = document.getElementById('filterDialog');
+  DOM.btnCloseFilterDialog = document.getElementById('btnCloseFilterDialog');
+  DOM.btnApplyFilters = document.getElementById('btnApplyFilters');
+  DOM.btnResetFilters = document.getElementById('btnResetFilters');
   
-  // Invite Dialog Modal Elements (Layar 3)
-  inviteDialog: document.getElementById('inviteDialog'),
-  btnOpenInviteModal: document.getElementById('btnOpenInviteModal'),
-  btnCloseInviteDialog: document.getElementById('btnCloseInviteDialog'),
-  btnCancelInvite: document.getElementById('btnCancelInvite'),
-  btnSubmitInvite: document.getElementById('btnSubmitInvite'),
-  inviteErrorAlert: document.getElementById('inviteErrorAlert'),
-  inviteRoleInputs: document.querySelectorAll('input[name="selectedRole"]'),
+  DOM.inviteDialog = document.getElementById('modal-invite');
+  DOM.btnOpenInviteModal = document.getElementById('btnOpenInviteModal');
+  DOM.btnCloseInviteDialog = document.getElementById('btnCloseInviteDialog');
+  DOM.btnCancelInvite = document.getElementById('btnCancelInvite');
+  DOM.btnSubmitInvite = document.getElementById('btnSubmitInvite');
+  DOM.inviteErrorAlert = document.getElementById('inviteErrorAlert');
+  DOM.inviteRoleInputs = document.querySelectorAll('input[name="selectedRole"]');
   
-  // Invitations Screen Elements (Layar 4)
-  countPending: document.getElementById('countPending'),
-  countAccepted: document.getElementById('countAccepted'),
-  countRejected: document.getElementById('countRejected'),
-  statusFilterButtons: document.querySelectorAll('.status-tab-btn'),
-  invitationsTableBody: document.getElementById('invitationsTableBody'),
-  invitationsMobileList: document.getElementById('invitationsMobileList'),
-  statusUpdateBanner: document.getElementById('statusUpdateBanner'),
-  statusUpdateCountText: document.getElementById('statusUpdateCountText'),
-  btnDismissUpdateBanner: document.getElementById('btnDismissUpdateBanner'),
+  DOM.countPending = document.getElementById('countPending');
+  DOM.countAccepted = document.getElementById('countAccepted');
+  DOM.countRejected = document.getElementById('countRejected');
+  DOM.statusFilterButtons = document.querySelectorAll('.status-tab-btn');
+  DOM.invitationsTableBody = document.getElementById('invitationsTableBody');
+  DOM.invitationsMobileList = document.getElementById('invitationsMobileList');
+  DOM.statusUpdateBanner = document.getElementById('statusUpdateBanner');
+  DOM.statusUpdateCountText = document.getElementById('statusUpdateCountText');
+  DOM.btnDismissUpdateBanner = document.getElementById('btnDismissUpdateBanner');
 
-  // Team Screen Elements (Layar 5)
-  teamSlotsContainer: document.getElementById('teamSlotsContainer'),
-  teamFilledCount: document.getElementById('teamFilledCount'),
-  teamPendingCount: document.getElementById('teamPendingCount'),
-  teamVacantCount: document.getElementById('teamVacantCount'),
-  teamProgressText: document.getElementById('teamProgressText'),
-  teamProgressBarFill: document.getElementById('teamProgressBarFill'),
-  btnViewInvitationsFromTeam: document.getElementById('btnViewInvitationsFromTeam'),
+  DOM.teamSlotsContainer = document.getElementById('teamSlotsContainer');
+  DOM.teamFilledCount = document.getElementById('teamFilledCount');
+  DOM.teamPendingCount = document.getElementById('teamPendingCount');
+  DOM.teamVacantCount = document.getElementById('teamVacantCount');
+  DOM.teamProgressText = document.getElementById('teamProgressText');
+  DOM.teamProgressBarFill = document.getElementById('teamProgressBarFill');
+  DOM.btnViewInvitationsFromTeam = document.getElementById('btnViewInvitationsFromTeam');
 
-  // Global Toasts
-  toastContainer: document.getElementById('toastContainer')
-};
+  DOM.toastContainer = document.getElementById('toastContainer');
+}
 
-// 3. Screen Router & Navigation Management
+async function loadScreenHTML(screenId, filePath) {
+  try {
+    if (window.location.protocol === 'file:') {
+      throw new Error('file-protocol');
+    }
+    const res = await fetch(filePath);
+    if (!res.ok) throw new Error(`HTTP ${res.status}`);
+    return await res.text();
+  } catch (err) {
+    if (window.SCREEN_FALLBACKS && window.SCREEN_FALLBACKS[screenId]) {
+      return window.SCREEN_FALLBACKS[screenId];
+    }
+    return '';
+  }
+}
+
+async function loadAllScreens() {
+  const mainContainer = document.getElementById('mainContainer');
+  const modalContainer = document.getElementById('modalContainer');
+
+  const mainScreenConfigs = [
+    { id: 'screen-dashboard', file: 'screens/screen-dashboard.html' },
+    { id: 'screen-profile', file: 'screens/screen-profile.html' },
+    { id: 'screen-invitations', file: 'screens/screen-invitations.html' },
+    { id: 'screen-team', file: 'screens/screen-team.html' }
+  ];
+
+  const mainHtmls = await Promise.all(
+    mainScreenConfigs.map(cfg => loadScreenHTML(cfg.id, cfg.file))
+  );
+
+  if (mainContainer) {
+    mainContainer.innerHTML = mainHtmls.join('\n');
+  }
+
+  const modalHtml = await loadScreenHTML('modal-invite', 'screens/modal-invite.html');
+  if (modalContainer) {
+    modalContainer.innerHTML = modalHtml;
+  }
+}
 
 function navigateToScreen(targetScreenId) {
   APP_STATE.currentScreen = targetScreenId;
 
-  // Toggle visual display of screens
   Object.keys(DOM.screens).forEach(key => {
     const screenEl = DOM.screens[key];
     if (screenEl) {
       if (screenEl.id === targetScreenId) {
         screenEl.classList.remove('d-none');
+        screenEl.classList.add('active');
       } else {
         screenEl.classList.add('d-none');
+        screenEl.classList.remove('active');
       }
     }
   });
 
-  // Update Navigation Active State (Desktop & Mobile)
   DOM.navTabs.forEach(tab => {
     const target = tab.getAttribute('data-target-screen');
-    // Jika di screen-profile, tab Cari Kandidat tetap dianggap aktif
     const shouldBeActive = target === targetScreenId || (targetScreenId === 'screen-profile' && target === 'screen-dashboard');
     if (shouldBeActive) {
       tab.classList.add('active');
@@ -240,7 +263,6 @@ function navigateToScreen(targetScreenId) {
     }
   });
 
-  // Re-render specific screens when navigated to
   if (targetScreenId === 'screen-dashboard') {
     renderCandidates();
   } else if (targetScreenId === 'screen-invitations') {
@@ -249,11 +271,10 @@ function navigateToScreen(targetScreenId) {
     renderTeamPositions();
   }
 
-  // Scroll to top
-  window.scrollTo({ top: 0, behavior: 'smooth' });
+  window.scrollTo(0, 0);
 }
 
-// 4. Candidate Listing & Filtering
+window.navigateToScreen = navigateToScreen;
 
 let searchDebounceTimeout = null;
 
@@ -278,7 +299,6 @@ function handleSearchInput(e) {
 
 function filterCandidatesData() {
   return APP_STATE.candidates.filter(candidate => {
-    // 1. Text Search Query
     if (APP_STATE.searchQuery) {
       const q = APP_STATE.searchQuery.toLowerCase();
       const matchName = candidate.name.toLowerCase().includes(q);
@@ -290,21 +310,18 @@ function filterCandidatesData() {
       }
     }
 
-    // 2. Category Filter 
     if (APP_STATE.activeCategory !== 'Semua') {
       if (!candidate.categories.includes(APP_STATE.activeCategory)) {
         return false;
       }
     }
 
-    // 3. Faculty / Prodi Filter from dialog
     if (APP_STATE.filterProdi.length > 0) {
       if (!APP_STATE.filterProdi.includes(candidate.faculty)) {
         return false;
       }
     }
 
-    // 4. Skills Filter from dialog
     if (APP_STATE.filterSkills.length > 0) {
       const hasAnySkill = candidate.skills.some(s => APP_STATE.filterSkills.includes(s));
       if (!hasAnySkill) {
@@ -319,12 +336,10 @@ function filterCandidatesData() {
 function renderCandidates() {
   const filtered = filterCandidatesData();
 
-  // Update Title Count
   if (DOM.candidatesCountLabel) {
     DOM.candidatesCountLabel.textContent = `Semua kandidat (${filtered.length})`;
   }
 
-  // Handle Empty State
   if (filtered.length === 0) {
     DOM.candidatesContainer.classList.add('d-none');
     DOM.emptyState.classList.remove('d-none');
@@ -426,12 +441,9 @@ function renderCandidates() {
   });
 }
 
-// 5. Layar 3 — Jendela Kirim Undangan (Modal & Validation)
-
 function openInviteModal() {
   if (!DOM.inviteDialog) return;
   
-  // Reset form state
   DOM.inviteRoleInputs.forEach(input => {
     input.checked = false;
     const label = input.closest('.role-radio-label');
@@ -442,7 +454,6 @@ function openInviteModal() {
     DOM.inviteErrorAlert.style.display = 'none';
   }
 
-  // Buka dialog secara native dengan backdrop
   if (typeof DOM.inviteDialog.showModal === 'function') {
     DOM.inviteDialog.showModal();
   } else {
@@ -462,7 +473,6 @@ function closeInviteModal() {
 function handleInviteFormSubmit() {
   const selectedRadio = document.querySelector('input[name="selectedRole"]:checked');
 
-  // Validasi inline: jika belum memilih peran
   if (!selectedRadio) {
     if (DOM.inviteErrorAlert) {
       DOM.inviteErrorAlert.style.display = 'flex';
@@ -473,7 +483,6 @@ function handleInviteFormSubmit() {
 
   const selectedRole = selectedRadio.value;
 
-  // Simulasi Loading 800ms
   const originalBtnContent = DOM.btnSubmitInvite.innerHTML;
   DOM.btnSubmitInvite.disabled = true;
   DOM.btnSubmitInvite.innerHTML = `
@@ -482,7 +491,6 @@ function handleInviteFormSubmit() {
   `;
 
   setTimeout(() => {
-    // 1. Tambah atau Perbarui status 
     const existingIndex = APP_STATE.invitations.findIndex(inv => inv.candidateId === 'alya');
     const today = '10 Nov 2026';
 
@@ -503,7 +511,6 @@ function handleInviteFormSubmit() {
       });
     }
 
-    // 2. Sinkronkan dengan Posisi di Tim Saya (Layar 5)
     const slotToUpdate = APP_STATE.team.slots.find(s => s.role === selectedRole);
     if (slotToUpdate) {
       slotToUpdate.status = 'pending';
@@ -523,10 +530,7 @@ function handleInviteFormSubmit() {
   }, 800);
 }
 
-// 6. Layar 4 — Status & Notifikasi (Undangan)
-
 function renderInvitations() {
-  // Hitung jumlah dinamis
   const pendingCount = APP_STATE.invitations.filter(i => i.status === 'pending').length;
   const acceptedCount = APP_STATE.invitations.filter(i => i.status === 'accepted').length;
   const rejectedCount = APP_STATE.invitations.filter(i => i.status === 'rejected').length;
@@ -535,7 +539,6 @@ function renderInvitations() {
   if (DOM.countAccepted) DOM.countAccepted.textContent = acceptedCount;
   if (DOM.countRejected) DOM.countRejected.textContent = rejectedCount;
 
-  // Filter data berdasarkan tab status
   const filtered = APP_STATE.invitations.filter(inv => {
     if (APP_STATE.invitationStatusFilter === 'Semua') return true;
     if (APP_STATE.invitationStatusFilter === 'Menunggu') return inv.status === 'pending';
@@ -544,7 +547,6 @@ function renderInvitations() {
     return true;
   });
 
-  // 1. Render Desktop Table
   if (DOM.invitationsTableBody) {
     DOM.invitationsTableBody.innerHTML = '';
     if (filtered.length === 0) {
@@ -596,7 +598,6 @@ function renderInvitations() {
     }
   }
 
-  // 2. Render Mobile Stacked Cards (Dual Signifier)
   if (DOM.invitationsMobileList) {
     DOM.invitationsMobileList.innerHTML = '';
     if (filtered.length === 0) {
@@ -644,15 +645,12 @@ function renderInvitations() {
     }
   }
 
-  // Pasang listener tombol lihat profil di tabel / kartu
   document.querySelectorAll('.btn-open-profile-from-table').forEach(btn => {
     btn.addEventListener('click', () => {
       navigateToScreen('screen-profile');
     });
   });
 }
-
-// 7. Layar 5 — Halaman Manajemen Tim (Tim Saya)
 
 function renderTeamPositions() {
   const slots = APP_STATE.team.slots;
@@ -669,13 +667,11 @@ function renderTeamPositions() {
     DOM.teamProgressText.textContent = `${acceptedCount} dari ${totalSlots} posisi terisi`;
   }
 
-  // Update Progress Bar
   const progressPercent = Math.round((acceptedCount / totalSlots) * 100);
   if (DOM.teamProgressBarFill) {
     DOM.teamProgressBarFill.style.width = `${progressPercent}%`;
   }
 
-  // Render Slots Container
   if (DOM.teamSlotsContainer) {
     DOM.teamSlotsContainer.innerHTML = '';
 
@@ -714,7 +710,6 @@ function renderTeamPositions() {
           </button>
         `;
       } else {
-        // Vacant / Kosong
         statusBadge = `<span class="status-badge status-badge-vacant"><i class="bi bi-dash-circle"></i> Posisi Kosong</span>`;
         avatarHtml = `<div class="slot-avatar" style="background:#EFEAF5; color:#625173;"><i class="bi bi-person-plus-fill"></i></div>`;
         detailHtml = `
@@ -773,8 +768,6 @@ function renderTeamPositions() {
   }
 }
 
-// 8. Toast Helper
-
 function showToast(message) {
   if (!DOM.toastContainer) return;
 
@@ -799,9 +792,15 @@ function showToast(message) {
   }, 3500);
 }
 
-// 9. Event Listeners Initialization
-
 function initEventListeners() {
+  const brandLogo = document.getElementById('brandLogo');
+  if (brandLogo) {
+    brandLogo.addEventListener('click', (e) => {
+      e.preventDefault();
+      navigateToScreen('screen-dashboard');
+    });
+  }
+
   DOM.navTabs.forEach(tab => {
     tab.addEventListener('click', (e) => {
       e.preventDefault();
@@ -841,7 +840,14 @@ function initEventListeners() {
     });
   });
 
-  // Back Button on Profile View (Layar 2)
+  const btnNotification = document.getElementById('btnNotification');
+  if (btnNotification) {
+    btnNotification.addEventListener('click', (e) => {
+      e.preventDefault();
+      navigateToScreen('screen-invitations');
+    });
+  }
+
   const backBtn = document.getElementById('btnBackToDashboard');
   if (backBtn) {
     backBtn.addEventListener('click', (e) => {
@@ -850,12 +856,10 @@ function initEventListeners() {
     });
   }
 
-  // Open Invite Modal Button (Layar 2 -> Layar 3)
   if (DOM.btnOpenInviteModal) {
     DOM.btnOpenInviteModal.addEventListener('click', openInviteModal);
   }
 
-  // Close & Cancel Invite Modal Buttons 
   if (DOM.btnCloseInviteDialog) {
     DOM.btnCloseInviteDialog.addEventListener('click', closeInviteModal);
   }
@@ -884,7 +888,6 @@ function initEventListeners() {
     });
   }
 
-  // Role Radio Selection Feedback
   DOM.inviteRoleInputs.forEach(input => {
     input.addEventListener('change', () => {
       if (DOM.inviteErrorAlert) DOM.inviteErrorAlert.style.display = 'none';
@@ -894,12 +897,10 @@ function initEventListeners() {
     });
   });
 
-  // Submit Invite Button
   if (DOM.btnSubmitInvite) {
     DOM.btnSubmitInvite.addEventListener('click', handleInviteFormSubmit);
   }
 
-  // Status Filter Tabs (Layar 4)
   DOM.statusFilterButtons.forEach(btn => {
     btn.addEventListener('click', () => {
       DOM.statusFilterButtons.forEach(b => b.classList.remove('active'));
@@ -909,7 +910,6 @@ function initEventListeners() {
     });
   });
 
-  // Dismiss Status Update Banner
   if (DOM.btnDismissUpdateBanner) {
     DOM.btnDismissUpdateBanner.addEventListener('click', () => {
       if (DOM.statusUpdateBanner) {
@@ -923,14 +923,12 @@ function initEventListeners() {
     });
   }
 
-  // View Invitations Button from Team Screen Aside
   if (DOM.btnViewInvitationsFromTeam) {
     DOM.btnViewInvitationsFromTeam.addEventListener('click', () => {
       navigateToScreen('screen-invitations');
     });
   }
 
-  // Filter Modal Controls (Program Studi & Keahlian)
   if (DOM.btnOpenFilterModal && DOM.filterDialog) {
     DOM.btnOpenFilterModal.addEventListener('click', () => {
       if (typeof DOM.filterDialog.showModal === 'function') {
@@ -969,9 +967,9 @@ function initEventListeners() {
   }
 }
 
-// 10. Application Bootstrap
-
-document.addEventListener('DOMContentLoaded', () => {
+document.addEventListener('DOMContentLoaded', async () => {
+  await loadAllScreens();
+  initDOMElements();
   initEventListeners();
   renderCandidates();
   renderInvitations();

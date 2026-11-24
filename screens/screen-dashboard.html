@@ -1,0 +1,171 @@
+<section id="screen-dashboard" class="screen-section active" aria-labelledby="dashboardHeroTitle">
+  <div class="hero-banner">
+    <div class="row align-items-center">
+      <div class="col-12 col-md-8">
+        <h1 id="dashboardHeroTitle" class="hero-title">
+          Halo, <span class="hero-title-accent">Rizal!</span>
+        </h1>
+        <p>Temukan partner terbaik untuk kompetisi berikutnya dengan kecocokan keahlian terverifikasi.</p>
+      </div>
+      <div class="col-md-4 d-none d-md-block text-end">
+        <svg class="hero-illustration" width="130" height="90" viewBox="0 0 130 90" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <circle cx="35" cy="45" r="28" fill="#FDFF94" fill-opacity="0.3"/>
+          <circle cx="85" cy="40" r="38" fill="#70E2F9" fill-opacity="0.25"/>
+          <path d="M45 55L65 32L85 55H45Z" fill="#FDFF94"/>
+          <circle cx="65" cy="22" r="8" fill="#FDFF94"/>
+        </svg>
+      </div>
+    </div>
+  </div>
+
+  <div class="search-container">
+    <label for="candidateSearchInput" class="search-label">Cari Kandidat</label>
+    <div class="search-input-group">
+      <div class="search-input-wrapper">
+        <i class="bi bi-search" aria-hidden="true"></i>
+        <input type="text" id="candidateSearchInput" class="search-input" placeholder="Cari nama kandidat, keahlian (UI/UX, Python), atau prodi..." autocomplete="off">
+      </div>
+      <button type="button" class="btn-filter-trigger" id="btnOpenFilterModal" aria-haspopup="dialog">
+        <i class="bi bi-sliders"></i>
+        <span>Filter</span>
+      </button>
+    </div>
+    <p class="search-helper-text">
+      <i class="bi bi-info-circle"></i>
+      <span>Gunakan kata kunci keahlian spesifik atau minat lomba untuk pencarian akurat.</span>
+    </p>
+  </div>
+
+  <div class="row">
+    <aside class="col-12 col-lg-3 mb-4 mb-lg-0">
+      <div class="category-sidebar">
+        <h2 class="filter-sidebar-title">
+          <i class="bi bi-grid-fill text-primary"></i>
+          <span>Kategori Kompetisi</span>
+        </h2>
+        <div class="category-chip-group" role="tablist" aria-label="Filter Kategori">
+          <button class="category-chip active" data-category="Semua" role="tab" aria-selected="true">
+            <span>Semua Kategori</span>
+            <span class="category-count">2</span>
+          </button>
+          <button class="category-chip" data-category="Hackathon" role="tab" aria-selected="false">
+            <span>Hackathon</span>
+            <span class="category-count">2</span>
+          </button>
+          <button class="category-chip" data-category="CTF" role="tab" aria-selected="false">
+            <span>CTF (Cyber Security)</span>
+            <span class="category-count">1</span>
+          </button>
+          <button class="category-chip" data-category="Business Plan" role="tab" aria-selected="false">
+            <span>Business Plan</span>
+            <span class="category-count">1</span>
+          </button>
+          <button class="category-chip" data-category="Other" role="tab" aria-selected="false">
+            <span>Other</span>
+            <span class="category-count">0</span>
+          </button>
+        </div>
+      </div>
+    </aside>
+
+    <section class="col-12 col-lg-9" aria-labelledby="candidatesCountLabel">
+      <div class="candidates-header">
+        <h2 id="candidatesCountLabel" class="candidates-count-title">Semua kandidat (2)</h2>
+      </div>
+
+      <div id="candidatesLoadingSpinner" class="loading-box d-none" aria-live="polite">
+        <div class="custom-spinner"></div>
+        <p class="text-secondary fw-semibold">Memuat kandidat yang sesuai...</p>
+      </div>
+
+      <div id="candidatesEmptyState" class="empty-state-box d-none" aria-live="polite">
+        <div class="empty-state-icon">
+          <i class="bi bi-person-x"></i>
+        </div>
+        <h3 class="empty-state-title">Kandidat Tidak Ditemukan</h3>
+        <p class="empty-state-desc">
+          Tidak ada kandidat yang cocok dengan kata kunci <span id="emptyStateQueryText" class="fw-bold text-primary">"zzz"</span>. Cobalah mencari keahlian lain atau reset filter.
+        </p>
+        <button class="btn-cta-cyan" id="btnResetSearch">
+          <i class="bi bi-arrow-counterclockwise"></i>
+          <span>Reset Pencarian</span>
+        </button>
+      </div>
+
+      <div id="candidatesListContainer" class="row">
+      </div>
+    </section>
+  </div>
+</section>
+
+<dialog id="filterDialog" class="filter-dialog" aria-labelledby="filterDialogTitle">
+  <div class="modal-header-custom">
+    <h3 id="filterDialogTitle" class="modal-title-custom">Filter Pencarian Kandidat</h3>
+    <button type="button" class="btn-close-custom" id="btnCloseFilterDialog" aria-label="Tutup Dialog Filter">
+      <i class="bi bi-x-lg"></i>
+    </button>
+  </div>
+
+  <div class="modal-body-custom">
+    <div class="mb-4">
+      <label class="fw-bold mb-2 d-block text-primary">Program Studi (FILKOM)</label>
+      <div class="checkbox-pill-grid">
+        <label class="checkbox-pill-label">
+          <input type="checkbox" name="filterProdi" value="Teknik Informatika">
+          <span>Teknik Informatika</span>
+        </label>
+        <label class="checkbox-pill-label">
+          <input type="checkbox" name="filterProdi" value="Sistem Informasi">
+          <span>Sistem Informasi</span>
+        </label>
+        <label class="checkbox-pill-label">
+          <input type="checkbox" name="filterProdi" value="Teknologi Informasi">
+          <span>Teknologi Informasi</span>
+        </label>
+        <label class="checkbox-pill-label">
+          <input type="checkbox" name="filterProdi" value="Teknik Komputer">
+          <span>Teknik Komputer</span>
+        </label>
+        <label class="checkbox-pill-label">
+          <input type="checkbox" name="filterProdi" value="Pendidikan Teknologi Informasi">
+          <span>Pendidikan TI</span>
+        </label>
+      </div>
+    </div>
+
+    <div class="mb-2">
+      <label class="fw-bold mb-2 d-block text-primary">Keahlian Spesifik</label>
+      <div class="checkbox-pill-grid">
+        <label class="checkbox-pill-label">
+          <input type="checkbox" name="filterSkill" value="UI/UX">
+          <span>UI/UX</span>
+        </label>
+        <label class="checkbox-pill-label">
+          <input type="checkbox" name="filterSkill" value="Figma">
+          <span>Figma</span>
+        </label>
+        <label class="checkbox-pill-label">
+          <input type="checkbox" name="filterSkill" value="Python">
+          <span>Python</span>
+        </label>
+        <label class="checkbox-pill-label">
+          <input type="checkbox" name="filterSkill" value="SQL">
+          <span>SQL</span>
+        </label>
+        <label class="checkbox-pill-label">
+          <input type="checkbox" name="filterSkill" value="Riset UX">
+          <span>Riset UX</span>
+        </label>
+        <label class="checkbox-pill-label">
+          <input type="checkbox" name="filterSkill" value="Analisis Data">
+          <span>Analisis Data</span>
+        </label>
+      </div>
+    </div>
+  </div>
+
+  <div class="modal-footer-custom">
+    <button type="button" class="btn-secondary-light" id="btnResetFilters">Reset</button>
+    <button type="button" class="btn-cta-cyan" id="btnApplyFilters">Terapkan Filter</button>
+  </div>
+</dialog>

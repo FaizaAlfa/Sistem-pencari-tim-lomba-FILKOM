@@ -1,0 +1,504 @@
+window.SCREEN_FALLBACKS = {
+  'screen-dashboard': `<section id="screen-dashboard" class="screen-section active" aria-labelledby="dashboardHeroTitle">
+  <div class="hero-banner">
+    <div class="row align-items-center">
+      <div class="col-12 col-md-8">
+        <h1 id="dashboardHeroTitle" class="hero-title">
+          Halo, <span class="hero-title-accent">Rizal!</span>
+        </h1>
+        <p>Temukan partner terbaik untuk kompetisi berikutnya dengan kecocokan keahlian terverifikasi.</p>
+      </div>
+      <div class="col-md-4 d-none d-md-block text-end">
+        <svg class="hero-illustration" width="130" height="90" viewBox="0 0 130 90" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <circle cx="35" cy="45" r="28" fill="#FDFF94" fill-opacity="0.3"/>
+          <circle cx="85" cy="40" r="38" fill="#70E2F9" fill-opacity="0.25"/>
+          <path d="M45 55L65 32L85 55H45Z" fill="#FDFF94"/>
+          <circle cx="65" cy="22" r="8" fill="#FDFF94"/>
+        </svg>
+      </div>
+    </div>
+  </div>
+
+  <div class="search-container">
+    <label for="candidateSearchInput" class="search-label">Cari Kandidat</label>
+    <div class="search-input-group">
+      <div class="search-input-wrapper">
+        <i class="bi bi-search" aria-hidden="true"></i>
+        <input type="text" id="candidateSearchInput" class="search-input" placeholder="Cari nama kandidat, keahlian (UI/UX, Python), atau prodi..." autocomplete="off">
+      </div>
+      <button type="button" class="btn-filter-trigger" id="btnOpenFilterModal" aria-haspopup="dialog">
+        <i class="bi bi-sliders"></i>
+        <span>Filter</span>
+      </button>
+    </div>
+    <p class="search-helper-text">
+      <i class="bi bi-info-circle"></i>
+      <span>Gunakan kata kunci keahlian spesifik atau minat lomba untuk pencarian akurat.</span>
+    </p>
+  </div>
+
+  <div class="row">
+    <aside class="col-12 col-lg-3 mb-4 mb-lg-0">
+      <div class="category-sidebar">
+        <h2 class="filter-sidebar-title">
+          <i class="bi bi-grid-fill text-primary"></i>
+          <span>Kategori Kompetisi</span>
+        </h2>
+        <div class="category-chip-group" role="tablist" aria-label="Filter Kategori">
+          <button class="category-chip active" data-category="Semua" role="tab" aria-selected="true">
+            <span>Semua Kategori</span>
+            <span class="category-count">2</span>
+          </button>
+          <button class="category-chip" data-category="Hackathon" role="tab" aria-selected="false">
+            <span>Hackathon</span>
+            <span class="category-count">2</span>
+          </button>
+          <button class="category-chip" data-category="CTF" role="tab" aria-selected="false">
+            <span>CTF (Cyber Security)</span>
+            <span class="category-count">1</span>
+          </button>
+          <button class="category-chip" data-category="Business Plan" role="tab" aria-selected="false">
+            <span>Business Plan</span>
+            <span class="category-count">1</span>
+          </button>
+          <button class="category-chip" data-category="Other" role="tab" aria-selected="false">
+            <span>Other</span>
+            <span class="category-count">0</span>
+          </button>
+        </div>
+      </div>
+    </aside>
+
+    <section class="col-12 col-lg-9" aria-labelledby="candidatesCountLabel">
+      <div class="candidates-header">
+        <h2 id="candidatesCountLabel" class="candidates-count-title">Semua kandidat (2)</h2>
+      </div>
+
+      <div id="candidatesLoadingSpinner" class="loading-box d-none" aria-live="polite">
+        <div class="custom-spinner"></div>
+        <p class="text-secondary fw-semibold">Memuat kandidat yang sesuai...</p>
+      </div>
+
+      <div id="candidatesEmptyState" class="empty-state-box d-none" aria-live="polite">
+        <div class="empty-state-icon">
+          <i class="bi bi-person-x"></i>
+        </div>
+        <h3 class="empty-state-title">Kandidat Tidak Ditemukan</h3>
+        <p class="empty-state-desc">
+          Tidak ada kandidat yang cocok dengan kata kunci <span id="emptyStateQueryText" class="fw-bold text-primary">"zzz"</span>. Cobalah mencari keahlian lain atau reset filter.
+        </p>
+        <button class="btn-cta-cyan" id="btnResetSearch">
+          <i class="bi bi-arrow-counterclockwise"></i>
+          <span>Reset Pencarian</span>
+        </button>
+      </div>
+
+      <div id="candidatesListContainer" class="row">
+      </div>
+    </section>
+  </div>
+</section>
+
+<dialog id="filterDialog" class="filter-dialog" aria-labelledby="filterDialogTitle">
+  <div class="modal-header-custom">
+    <h3 id="filterDialogTitle" class="modal-title-custom">Filter Pencarian Kandidat</h3>
+    <button type="button" class="btn-close-custom" id="btnCloseFilterDialog" aria-label="Tutup Dialog Filter">
+      <i class="bi bi-x-lg"></i>
+    </button>
+  </div>
+
+  <div class="modal-body-custom">
+    <div class="mb-4">
+      <label class="fw-bold mb-2 d-block text-primary">Program Studi (FILKOM)</label>
+      <div class="checkbox-pill-grid">
+        <label class="checkbox-pill-label">
+          <input type="checkbox" name="filterProdi" value="Teknik Informatika">
+          <span>Teknik Informatika</span>
+        </label>
+        <label class="checkbox-pill-label">
+          <input type="checkbox" name="filterProdi" value="Sistem Informasi">
+          <span>Sistem Informasi</span>
+        </label>
+        <label class="checkbox-pill-label">
+          <input type="checkbox" name="filterProdi" value="Teknologi Informasi">
+          <span>Teknologi Informasi</span>
+        </label>
+        <label class="checkbox-pill-label">
+          <input type="checkbox" name="filterProdi" value="Teknik Komputer">
+          <span>Teknik Komputer</span>
+        </label>
+        <label class="checkbox-pill-label">
+          <input type="checkbox" name="filterProdi" value="Pendidikan Teknologi Informasi">
+          <span>Pendidikan TI</span>
+        </label>
+      </div>
+    </div>
+
+    <div class="mb-2">
+      <label class="fw-bold mb-2 d-block text-primary">Keahlian Spesifik</label>
+      <div class="checkbox-pill-grid">
+        <label class="checkbox-pill-label">
+          <input type="checkbox" name="filterSkill" value="UI/UX">
+          <span>UI/UX</span>
+        </label>
+        <label class="checkbox-pill-label">
+          <input type="checkbox" name="filterSkill" value="Figma">
+          <span>Figma</span>
+        </label>
+        <label class="checkbox-pill-label">
+          <input type="checkbox" name="filterSkill" value="Python">
+          <span>Python</span>
+        </label>
+        <label class="checkbox-pill-label">
+          <input type="checkbox" name="filterSkill" value="SQL">
+          <span>SQL</span>
+        </label>
+        <label class="checkbox-pill-label">
+          <input type="checkbox" name="filterSkill" value="Riset UX">
+          <span>Riset UX</span>
+        </label>
+        <label class="checkbox-pill-label">
+          <input type="checkbox" name="filterSkill" value="Analisis Data">
+          <span>Analisis Data</span>
+        </label>
+      </div>
+    </div>
+  </div>
+
+  <div class="modal-footer-custom">
+    <button type="button" class="btn-secondary-light" id="btnResetFilters">Reset</button>
+    <button type="button" class="btn-cta-cyan" id="btnApplyFilters">Terapkan Filter</button>
+  </div>
+</dialog>`,
+
+  'screen-profile': `<section id="screen-profile" class="screen-section d-none" aria-labelledby="profileCandidateName">
+  <div>
+    <a href="#" class="back-nav-btn" id="btnBackToDashboard">
+      <i class="bi bi-arrow-left"></i>
+      <span class="d-none d-md-inline">&larr; Cari Kandidat</span>
+      <span class="d-inline d-md-none">&larr; Profil Kandidat</span>
+    </a>
+  </div>
+
+  <div class="row g-4">
+    <aside class="col-12 col-lg-4">
+      <div class="profile-card-aside">
+        <div class="profile-avatar-large" aria-hidden="true">AP</div>
+        <h2 id="profileCandidateName">Alya Putri</h2>
+        <div class="profile-sub">Teknik Informatika &bull; Semester 5</div>
+        
+        <p class="text-light" style="font-size: 14px; opacity: 0.95;">
+          Mahasiswa Teknik Informatika peminatan Human-Computer Interaction & UI/UX Design dengan pengalaman riset pengguna dan perancangan prototipe web/mobile.
+        </p>
+
+        <div class="profile-section-title">Keahlian Utama</div>
+        <div class="profile-tag-group">
+          <span class="profile-tag-pill">UI/UX</span>
+          <span class="profile-tag-pill">Figma</span>
+          <span class="profile-tag-pill">Riset UX</span>
+          <span class="profile-tag-pill">Wireframing</span>
+        </div>
+
+        <div class="profile-section-title">Minat Kompetisi</div>
+        <div class="profile-tag-group">
+          <span class="profile-tag-pill">Hackathon</span>
+          <span class="profile-tag-pill">Business Plan</span>
+        </div>
+
+        <div class="profile-section-title">Indeks Prestasi Kumulatif</div>
+        <div class="d-flex align-items-center gap-2 mb-4">
+          <span class="stat-number text-white">3.88</span>
+          <span class="text-caption text-light">/ 4.00</span>
+        </div>
+
+        <div class="pt-2">
+          <button class="btn-cta-cyan w-100 py-3 fs-6" id="btnOpenInviteModal">
+            <i class="bi bi-send-fill"></i>
+            <span>Undang ke Tim</span>
+          </button>
+        </div>
+      </div>
+    </aside>
+
+    <section class="col-12 col-lg-8" aria-labelledby="portfolioSectionTitle">
+      <div class="d-flex align-items-center justify-content-between mb-3">
+        <h2 id="portfolioSectionTitle" class="h2 mb-0">Portofolio & Pengalaman</h2>
+        <span class="badge bg-white text-primary border px-3 py-2 rounded-pill fw-semibold">
+          <i class="bi bi-award-fill text-warning me-1"></i> Terverifikasi
+        </span>
+      </div>
+
+      <article class="portfolio-card-purple" aria-labelledby="portTitle1">
+        <div class="portfolio-header">
+          <h3 id="portTitle1" class="portfolio-title">KantinKu — Prototipe Aplikasi</h3>
+          <span class="portfolio-status-link">
+            <i class="bi bi-box-arrow-up-right"></i>
+            <span>Prototipe Figma</span>
+          </span>
+        </div>
+        <p style="color: #4A257B; margin-bottom: 12px;">
+          Perancangan antarmuka dan alur pemesanan makanan kantin FILKOM secara daring untuk mengatasi penumpukan antrean pada jam istirahat. Menggunakan metodologi Design Thinking.
+        </p>
+        <div class="portfolio-preview-box">
+          <div class="portfolio-icon-box">
+            <i class="bi bi-phone"></i>
+          </div>
+          <div>
+            <strong class="d-block text-dark">Mobile Application Design & Flow</strong>
+            <span style="font-size: 13px; color: #58338C;">24 Layar Antarmuka, Design System, & Interactive High-Fidelity Prototype</span>
+          </div>
+        </div>
+        <div class="d-flex flex-wrap gap-2 pt-1">
+          <span class="badge bg-white text-dark border rounded-pill">UI/UX Mobile</span>
+          <span class="badge bg-white text-dark border rounded-pill">User Flow</span>
+          <span class="badge bg-white text-dark border rounded-pill">Design System</span>
+        </div>
+      </article>
+
+      <article class="portfolio-card-mint" aria-labelledby="portTitle2">
+        <div class="portfolio-header">
+          <h3 id="portTitle2" class="portfolio-title">Riset UX — Perpustakaan Digital</h3>
+          <span class="portfolio-status-link">
+            <i class="bi bi-file-earmark-text"></i>
+            <span>Laporan Usability</span>
+          </span>
+        </div>
+        <p style="color: #175F52; margin-bottom: 12px;">
+          Pengujian kegunaan (usability testing) pada platform katalog daring perpustakaan dengan metode System Usability Scale (SUS) bersama 15 mahasiswa sebagai partisipan.
+        </p>
+        <div class="portfolio-preview-box">
+          <div class="portfolio-icon-box">
+            <i class="bi bi-journal-check"></i>
+          </div>
+          <div>
+            <strong class="d-block text-dark">Usability Evaluation & Insight Report</strong>
+            <span style="font-size: 13px; color: #206E60;">Peningkatan skor SUS dari 58 (Marginal) menjadi 82 (Excellent) pada rekomendasi desain</span>
+          </div>
+        </div>
+        <div class="d-flex flex-wrap gap-2 pt-1">
+          <span class="badge bg-white text-dark border rounded-pill">Riset UX</span>
+          <span class="badge bg-white text-dark border rounded-pill">Usability Testing</span>
+          <span class="badge bg-white text-dark border rounded-pill">SUS Metrik</span>
+        </div>
+      </article>
+    </section>
+  </div>
+</section>`,
+
+  'modal-invite': `<dialog id="modal-invite" class="invite-dialog" aria-labelledby="inviteModalTitle">
+  <div class="modal-header-custom">
+    <h3 id="inviteModalTitle" class="modal-title-custom">Undang Alya Putri ke Tim?</h3>
+    <button type="button" class="btn-close-custom" id="btnCloseInviteDialog" aria-label="Tutup Jendela">
+      <i class="bi bi-x-lg"></i>
+    </button>
+  </div>
+
+  <div class="modal-body-custom">
+    <div class="modal-candidate-summary">
+      <div class="modal-avatar-mini" aria-hidden="true">AP</div>
+      <div>
+        <strong class="d-block text-white fs-6">Alya Putri</strong>
+        <span class="text-caption text-light">Teknik Informatika &bull; Semester 5</span>
+      </div>
+    </div>
+
+    <div class="modal-consequence-text">
+      <i class="bi bi-exclamation-triangle-fill text-warning me-1"></i>
+      <span>Undangan akan dikirimkan ke Alya Putri. Kuota posisi pada tim Anda akan dicadangkan hingga kandidat merespons.</span>
+    </div>
+
+    <fieldset class="role-fieldset">
+      <legend class="role-legend">Pilih Posisi / Peran Tim</legend>
+      
+      <div class="role-radio-group">
+        <label class="role-radio-label">
+          <input type="radio" name="selectedRole" value="UI/UX Designer" class="role-radio-input">
+          <div class="role-info-text">
+            <span class="role-title">UI/UX Designer</span>
+            <span class="role-desc">Merancang wireframe, user flow, dan antarmuka interaktif</span>
+          </div>
+        </label>
+
+        <label class="role-radio-label">
+          <input type="radio" name="selectedRole" value="Frontend Developer" class="role-radio-input">
+          <div class="role-info-text">
+            <span class="role-title">Frontend Developer</span>
+            <span class="role-desc">Mengimplementasikan antarmuka ke kode web/aplikasi</span>
+          </div>
+        </label>
+
+        <label class="role-radio-label">
+          <input type="radio" name="selectedRole" value="Backend Developer" class="role-radio-input">
+          <div class="role-info-text">
+            <span class="role-title">Backend Developer</span>
+            <span class="role-desc">Mengembangkan API, basis data, dan arsitektur server</span>
+          </div>
+        </label>
+
+        <label class="role-radio-label">
+          <input type="radio" name="selectedRole" value="Data Analyst" class="role-radio-input">
+          <div class="role-info-text">
+            <span class="role-title">Data Analyst</span>
+            <span class="role-desc">Mengolah dataset, visualisasi insight, dan statistik</span>
+          </div>
+        </label>
+      </div>
+    </fieldset>
+
+    <div id="inviteErrorAlert" class="modal-error-alert" role="alert" tabindex="-1">
+      <i class="bi bi-exclamation-circle-fill"></i>
+      <span>Pilih tepat satu peran sebelum mengirim.</span>
+    </div>
+  </div>
+
+  <div class="modal-footer-custom">
+    <button type="button" class="btn-secondary-light" id="btnCancelInvite">
+      Batal
+    </button>
+    <button type="button" class="btn-cta-cyan" id="btnSubmitInvite">
+      <i class="bi bi-send-fill"></i>
+      <span>Kirim Undangan</span>
+    </button>
+  </div>
+</dialog>`,
+
+  'screen-invitations': `<section id="screen-invitations" class="screen-section d-none" aria-labelledby="invitationsScreenTitle">
+  <div class="d-flex align-items-center justify-content-between mb-4">
+    <div>
+      <h1 id="invitationsScreenTitle" class="h1 mb-1">Status & Undangan</h1>
+      <p class="mb-0">Pantau proses rekrutmen anggota tim lomba secara real-time.</p>
+    </div>
+  </div>
+
+  <div class="summary-cards-grid">
+    <div class="summary-card dual-signifier-card status-pending">
+      <div class="summary-card-header">
+        <span class="summary-card-title">Menunggu</span>
+        <div class="summary-icon-pill status-badge-pending">
+          <i class="bi bi-clock-fill"></i>
+        </div>
+      </div>
+      <div class="stat-number text-dark" id="countPending">2</div>
+      <span class="text-caption text-muted mt-2">Menunggu konfirmasi mahasiswa</span>
+    </div>
+
+    <div class="summary-card dual-signifier-card status-accepted">
+      <div class="summary-card-header">
+        <span class="summary-card-title">Diterima</span>
+        <div class="summary-icon-pill status-badge-accepted">
+          <i class="bi bi-check-circle-fill"></i>
+        </div>
+      </div>
+      <div class="stat-number text-dark" id="countAccepted">1</div>
+      <span class="text-caption text-muted mt-2">Telah bergabung dengan tim</span>
+    </div>
+
+    <div class="summary-card dual-signifier-card status-rejected">
+      <div class="summary-card-header">
+        <span class="summary-card-title">Ditolak</span>
+        <div class="summary-icon-pill status-badge-rejected">
+          <i class="bi bi-x-circle-fill"></i>
+        </div>
+      </div>
+      <div class="stat-number text-dark" id="countRejected">1</div>
+      <span class="text-caption text-muted mt-2">Kandidat menolak undangan</span>
+    </div>
+  </div>
+
+  <div class="status-update-banner" id="statusUpdateBanner" role="status">
+    <div class="status-update-text">
+      <i class="bi bi-bell-fill fs-5"></i>
+      <span><strong id="statusUpdateCountText">2 pembaruan status</strong> rekrutmen belum ditinjau oleh Anda.</span>
+    </div>
+    <button class="btn btn-sm btn-outline-dark rounded-pill" id="btnDismissUpdateBanner">
+      Tandai Dibaca
+    </button>
+  </div>
+
+  <div class="status-filter-tabs" role="tablist" aria-label="Filter Status Undangan">
+    <button class="status-tab-btn active" data-status="Semua" role="tab" aria-selected="true">Semua</button>
+    <button class="status-tab-btn" data-status="Menunggu" role="tab" aria-selected="false">Menunggu</button>
+    <button class="status-tab-btn" data-status="Diterima" role="tab" aria-selected="false">Diterima</button>
+    <button class="status-tab-btn" data-status="Ditolak" role="tab" aria-selected="false">Ditolak</button>
+  </div>
+
+  <div class="invitation-table-container">
+    <table class="invitation-table" aria-label="Daftar Undangan Kandidat">
+      <thead>
+        <tr>
+          <th scope="col">Kandidat</th>
+          <th scope="col">Peran / Posisi</th>
+          <th scope="col">Tanggal Kirim</th>
+          <th scope="col">Status</th>
+          <th scope="col">Aksi</th>
+        </tr>
+      </thead>
+      <tbody id="invitationsTableBody">
+      </tbody>
+    </table>
+  </div>
+
+  <div class="mobile-stacked-cards" id="invitationsMobileList" aria-label="Daftar Undangan Kandidat Versi Mobile">
+  </div>
+</section>`,
+
+  'screen-team': `<section id="screen-team" class="screen-section d-none" aria-labelledby="teamScreenTitle">
+  <div class="d-flex align-items-center justify-content-between mb-4">
+    <div>
+      <h1 id="teamScreenTitle" class="h1 mb-1">Manajemen Tim</h1>
+      <p class="mb-0">Kelola komposisi peran dan kesiapan tim lomba Anda.</p>
+    </div>
+  </div>
+
+  <div class="row g-4">
+    <aside class="col-12 col-lg-4">
+      <div class="team-aside-card">
+        <span class="team-badge-pill">Kategori kompetisi: Hackathon</span>
+        <h2>Tim Nalar</h2>
+        <p>
+          Fokus pada pengembangan solusi digital inovatif untuk kebutuhan sivitas akademika FILKOM UB.
+        </p>
+
+        <div class="mb-4">
+          <div class="text-caption text-light mb-1">Target Kompetisi</div>
+          <strong class="text-white">Gemastik / Hackathon Nasional 2026</strong>
+        </div>
+
+        <button class="btn-cta-cyan w-100 py-3" id="btnViewInvitationsFromTeam">
+          <i class="bi bi-envelope-paper-fill"></i>
+          <span>Lihat Undangan</span>
+        </button>
+      </div>
+    </aside>
+
+    <section class="col-12 col-lg-8" aria-labelledby="progressTitle">
+      <div class="team-progress-card">
+        <div class="team-progress-header">
+          <div>
+            <h3 id="progressTitle" class="h3 mb-1">Progres Pembentukan Tim</h3>
+            <div class="fw-bold fs-5 text-primary" id="teamProgressText">1 dari 3 posisi terisi</div>
+          </div>
+          <div class="d-flex gap-2">
+            <span class="badge status-badge-accepted"><span id="teamFilledCount">1</span> Terisi</span>
+            <span class="badge status-badge-pending"><span id="teamPendingCount">1</span> Menunggu</span>
+            <span class="badge status-badge-vacant"><span id="teamVacantCount">1</span> Kosong</span>
+          </div>
+        </div>
+
+        <div class="progress-bar-custom" role="progressbar" aria-valuenow="33" aria-valuemin="0" aria-valuemax="100">
+          <div class="progress-fill-custom" id="teamProgressBarFill" style="width: 33%;"></div>
+        </div>
+
+        <p class="progress-note">
+          <i class="bi bi-info-circle-fill text-muted"></i>
+          <span>Menunggu belum dihitung sebagai posisi terisi.</span>
+        </p>
+      </div>
+
+      <h3 class="h3 mb-3">Anggota dan Posisi Tim</h3>
+      <div class="positions-container" id="teamSlotsContainer">
+      </div>
+    </section>
+  </div>
+</section>`
+};

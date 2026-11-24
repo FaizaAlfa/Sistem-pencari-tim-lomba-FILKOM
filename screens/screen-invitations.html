@@ -1,0 +1,79 @@
+<section id="screen-invitations" class="screen-section d-none" aria-labelledby="invitationsScreenTitle">
+  <div class="d-flex align-items-center justify-content-between mb-4">
+    <div>
+      <h1 id="invitationsScreenTitle" class="h1 mb-1">Status & Undangan</h1>
+      <p class="mb-0">Pantau proses rekrutmen anggota tim lomba secara real-time.</p>
+    </div>
+  </div>
+
+  <div class="summary-cards-grid">
+    <div class="summary-card dual-signifier-card status-pending">
+      <div class="summary-card-header">
+        <span class="summary-card-title">Menunggu</span>
+        <div class="summary-icon-pill status-badge-pending">
+          <i class="bi bi-clock-fill"></i>
+        </div>
+      </div>
+      <div class="stat-number text-dark" id="countPending">2</div>
+      <span class="text-caption text-muted mt-2">Menunggu konfirmasi mahasiswa</span>
+    </div>
+
+    <div class="summary-card dual-signifier-card status-accepted">
+      <div class="summary-card-header">
+        <span class="summary-card-title">Diterima</span>
+        <div class="summary-icon-pill status-badge-accepted">
+          <i class="bi bi-check-circle-fill"></i>
+        </div>
+      </div>
+      <div class="stat-number text-dark" id="countAccepted">1</div>
+      <span class="text-caption text-muted mt-2">Telah bergabung dengan tim</span>
+    </div>
+
+    <div class="summary-card dual-signifier-card status-rejected">
+      <div class="summary-card-header">
+        <span class="summary-card-title">Ditolak</span>
+        <div class="summary-icon-pill status-badge-rejected">
+          <i class="bi bi-x-circle-fill"></i>
+        </div>
+      </div>
+      <div class="stat-number text-dark" id="countRejected">1</div>
+      <span class="text-caption text-muted mt-2">Kandidat menolak undangan</span>
+    </div>
+  </div>
+
+  <div class="status-update-banner" id="statusUpdateBanner" role="status">
+    <div class="status-update-text">
+      <i class="bi bi-bell-fill fs-5"></i>
+      <span><strong id="statusUpdateCountText">2 pembaruan status</strong> rekrutmen belum ditinjau oleh Anda.</span>
+    </div>
+    <button class="btn btn-sm btn-outline-dark rounded-pill" id="btnDismissUpdateBanner">
+      Tandai Dibaca
+    </button>
+  </div>
+
+  <div class="status-filter-tabs" role="tablist" aria-label="Filter Status Undangan">
+    <button class="status-tab-btn active" data-status="Semua" role="tab" aria-selected="true">Semua</button>
+    <button class="status-tab-btn" data-status="Menunggu" role="tab" aria-selected="false">Menunggu</button>
+    <button class="status-tab-btn" data-status="Diterima" role="tab" aria-selected="false">Diterima</button>
+    <button class="status-tab-btn" data-status="Ditolak" role="tab" aria-selected="false">Ditolak</button>
+  </div>
+
+  <div class="invitation-table-container">
+    <table class="invitation-table" aria-label="Daftar Undangan Kandidat">
+      <thead>
+        <tr>
+          <th scope="col">Kandidat</th>
+          <th scope="col">Peran / Posisi</th>
+          <th scope="col">Tanggal Kirim</th>
+          <th scope="col">Status</th>
+          <th scope="col">Aksi</th>
+        </tr>
+      </thead>
+      <tbody id="invitationsTableBody">
+      </tbody>
+    </table>
+  </div>
+
+  <div class="mobile-stacked-cards" id="invitationsMobileList" aria-label="Daftar Undangan Kandidat Versi Mobile">
+  </div>
+</section>
