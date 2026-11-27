@@ -1,966 +1,779 @@
+'use strict';
+
+// ============================================================================
+// 1. STATE & HELPER DASAR
+// ============================================================================
+
 const APP_STATE = {
-  currentScreen: 'screen-dashboard', 
-  activeCategory: 'Hackathon',
-  searchQuery: '',
+  activeScreen: APP_CONFIG.defaultScreen,
+  selectedCandidateId: APP_CONFIG.defaultCandidateId,
+  category: APP_CONFIG.defaultCategory,
+  query: '',
   filterProdi: [],
   filterSkills: [],
-  invitationStatusFilter: 'Semua',
-  unreadUpdates: 2,
-  
-  candidates: [
-    {
-      id: 'alya',
-      name: 'Alya Putri',
-      initials: 'AP',
-      prodi: 'Teknik Informatika - Semester 5',
-      faculty: 'Teknik Informatika',
-      semester: 5,
-      gpa: '3.88',
-      skills: ['UI/UX', 'Figma', 'Riset UX'],
-      categories: ['Hackathon', 'Business Plan'],
-      hasPortfolio: true,
-      isFeatured: true,
-      bio: 'Mahasiswa Teknik Informatika peminatan Human-Computer Interaction & UI/UX Design dengan pengalaman riset pengguna dan perancangan prototipe web/mobile.',
-      portfolios: [
-        {
-          id: 'port-1',
-          title: 'KantinKu — Prototipe Aplikasi',
-          type: 'purple',
-          desc: 'Desain UI/UX solusi pemesanan makanan kantin FILKOM untuk mengurangi antrean jam makan siang sivitas akademika.',
-          tag: 'UI/UX Mobile App',
-          statusText: 'Prototipe Figma Aktif',
-          icon: 'bi-phone'
-        },
-        {
-          id: 'port-2',
-          title: 'Riset UX — Perpustakaan Digital',
-          type: 'mint',
-          desc: 'Studi komparasi dan usability testing sistem katalog digital perpustakaan kampus dengan 15 partisipan mahasiswa.',
-          tag: 'Usability Testing & Research',
-          statusText: 'Dokumen Riset Tersedia',
-          icon: 'bi-journal-check'
-        }
-      ]
-    },
-    {
-      id: 'bima',
-      name: 'Bima Pratama',
-      initials: 'BP',
-      prodi: 'Sistem Informasi - Semester 3',
-      faculty: 'Sistem Informasi',
-      semester: 3,
-      gpa: '3.75',
-      skills: ['Python', 'SQL', 'Analisis Data'],
-      categories: ['Hackathon', 'CTF'],
-      hasPortfolio: false,
-      isFeatured: false,
-      bio: 'Fokus pada eksplorasi data science, pemodelan statistik, dan pipeline pengolahan data tabular.',
-      portfolios: []
-    }
-  ],
-
-  invitations: [
-    {
-      id: 'inv-1',
-      candidateName: 'Alya Putri',
-      initials: 'AP',
-      candidateId: 'alya',
-      prodi: 'Teknik Informatika',
-      role: 'UI/UX Designer',
-      date: '10 Nov 2026',
-      status: 'pending',
-      isNew: false
-    },
-    {
-      id: 'inv-2',
-      candidateName: 'Bima Pratama',
-      initials: 'BP',
-      candidateId: 'bima',
-      prodi: 'Sistem Informasi',
-      role: 'Data Analyst',
-      date: '09 Nov 2026',
-      status: 'accepted',
-      isNew: true
-    },
-    {
-      id: 'inv-3',
-      candidateName: 'Citra Maheswari',
-      initials: 'CM',
-      candidateId: 'citra',
-      prodi: 'Sistem Informasi',
-      role: 'Frontend Developer',
-      date: '08 Nov 2026',
-      status: 'rejected',
-      isNew: true
-    },
-    {
-      id: 'inv-4',
-      candidateName: 'Dimas Saputra',
-      initials: 'DS',
-      candidateId: 'dimas',
-      prodi: 'Teknik Informatika',
-      role: 'Backend Developer',
-      date: '07 Nov 2026',
-      status: 'pending',
-      isNew: false
-    }
-  ],
-
-  team: {
-    name: 'Tim Nalar',
-    competition: 'Kategori kompetisi: Hackathon',
-    description: 'Fokus pada pengembangan solusi digital inovatif untuk kebutuhan sivitas akademika FILKOM UB.',
-    slots: [
-      {
-        id: 'slot-1',
-        role: 'Data Analyst',
-        status: 'accepted',
-        candidateName: 'Bima Pratama',
-        initials: 'BP',
-        prodi: 'Sistem Informasi - Semester 3'
-      },
-      {
-        id: 'slot-2',
-        role: 'UI/UX Designer',
-        status: 'pending',
-        candidateName: 'Alya Putri',
-        initials: 'AP',
-        prodi: 'Teknik Informatika - Semester 5'
-      },
-      {
-        id: 'slot-3',
-        role: 'Frontend Developer',
-        status: 'vacant',
-        candidateName: null,
-        initials: '-',
-        prodi: null
-      }
-    ]
-  }
+  invitationFilter: INVITATION_TABS[0].label,
+  invitations: structuredClone(INITIAL_INVITATIONS),
 };
 
-const DOM = {
-  screens: {}
-};
+const el = id => document.getElementById(id);
 
-const SCREEN_ROUTES = {
-  'screen-dashboard': 'cari-kandidat',
-  'screen-profile': 'profil',
-  'screen-invitations': 'undangan',
-  'screen-team': 'tim-saya'
-};
-
-function getScreenFromLocation() {
-  const route = window.location.hash.slice(1);
-  return Object.keys(SCREEN_ROUTES).find(screenId => SCREEN_ROUTES[screenId] === route)
-    || 'screen-dashboard';
+function setText(id, text) {
+  const node = el(id);
+  if (node) node.textContent = text;
 }
 
-function initDOMElements() {
-  DOM.screens = {
-    dashboard: document.getElementById('screen-dashboard'),
-    profile: document.getElementById('screen-profile'),
-    invitations: document.getElementById('screen-invitations'),
-    team: document.getElementById('screen-team')
-  };
-  
-  DOM.navTabs = document.querySelectorAll('[data-target-screen]');
-  DOM.unreadBadge = document.getElementById('unreadBadgeCount');
-  
-  DOM.searchInput = document.getElementById('candidateSearchInput');
-  DOM.candidatesContainer = document.getElementById('candidatesListContainer');
-  DOM.candidatesCountLabel = document.getElementById('candidatesCountLabel');
-  DOM.categoryChips = document.querySelectorAll('.category-chip');
-  DOM.loadingSpinner = document.getElementById('candidatesLoadingSpinner');
-  DOM.emptyState = document.getElementById('candidatesEmptyState');
-  DOM.emptyStateQueryText = document.getElementById('emptyStateQueryText');
-  DOM.resetSearchBtn = document.getElementById('btnResetSearch');
-
-  DOM.btnOpenFilterModal = document.getElementById('btnOpenFilterModal');
-  DOM.filterDialog = document.getElementById('filterDialog');
-  DOM.btnCloseFilterDialog = document.getElementById('btnCloseFilterDialog');
-  DOM.btnApplyFilters = document.getElementById('btnApplyFilters');
-  DOM.btnResetFilters = document.getElementById('btnResetFilters');
-  
-  DOM.inviteDialog = document.getElementById('modal-invite');
-  DOM.btnOpenInviteModal = document.getElementById('btnOpenInviteModal');
-  DOM.btnCloseInviteDialog = document.getElementById('btnCloseInviteDialog');
-  DOM.btnCancelInvite = document.getElementById('btnCancelInvite');
-  DOM.btnSubmitInvite = document.getElementById('btnSubmitInvite');
-  DOM.inviteErrorAlert = document.getElementById('inviteErrorAlert');
-  DOM.inviteRoleInputs = document.querySelectorAll('input[name="selectedRole"]');
-  
-  DOM.countPending = document.getElementById('countPending');
-  DOM.countAccepted = document.getElementById('countAccepted');
-  DOM.countRejected = document.getElementById('countRejected');
-  DOM.statusFilterButtons = document.querySelectorAll('.status-tab-btn');
-  DOM.invitationsTableBody = document.getElementById('invitationsTableBody');
-  DOM.invitationsMobileList = document.getElementById('invitationsMobileList');
-  DOM.statusUpdateBanner = document.getElementById('statusUpdateBanner');
-  DOM.statusUpdateCountText = document.getElementById('statusUpdateCountText');
-  DOM.btnDismissUpdateBanner = document.getElementById('btnDismissUpdateBanner');
-
-  DOM.teamSlotsContainer = document.getElementById('teamSlotsContainer');
-  DOM.teamFilledCount = document.getElementById('teamFilledCount');
-  DOM.teamPendingCount = document.getElementById('teamPendingCount');
-  DOM.teamVacantCount = document.getElementById('teamVacantCount');
-  DOM.teamProgressText = document.getElementById('teamProgressText');
-  DOM.teamProgressBarFill = document.getElementById('teamProgressBarFill');
-  DOM.btnViewInvitationsFromTeam = document.getElementById('btnViewInvitationsFromTeam');
-
-  DOM.toastContainer = document.getElementById('toastContainer');
+function setHTML(id, html) {
+  const node = el(id);
+  if (node) node.innerHTML = html;
 }
 
-async function loadScreenHTML(screenId, filePath) {
+/** Escape karakter HTML agar teks dari data/input aman dirender ke DOM. */
+function esc(value) {
+  return String(value ?? '').replace(/[&<>"']/g, ch => ({
+    '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;',
+  }[ch]));
+}
+
+function getCandidate(id) {
+  return CANDIDATES.find(c => c.id === id) || null;
+}
+
+function avatarClass(candidate) {
+  return `avatar-${candidate?.avatarTheme || 'blue'}`;
+}
+
+function hasPortfolio(candidate) {
+  return candidate.portfolios.length > 0;
+}
+
+function prodiLabel(candidate) {
+  return candidate.semester
+    ? `${candidate.program} - Semester ${candidate.semester}`
+    : candidate.program;
+}
+
+function formatDate(iso) {
+  return new Date(`${iso}T00:00:00`).toLocaleDateString('id-ID', {
+    day: '2-digit',
+    month: 'short',
+    year: 'numeric',
+  });
+}
+
+function todayISO() {
+  const d = new Date();
+  const pad = n => String(n).padStart(2, '0');
+  return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}`;
+}
+
+function statusBadge(status) {
+  const s = STATUS[status] || STATUS.vacant;
+  return `<span class="status-badge status-badge-${esc(status)}"><i class="bi ${esc(s.icon)}"></i> ${esc(s.label)}</span>`;
+}
+
+/** Hitung status terkini setiap posisi tim berdasarkan daftar undangan. */
+function getTeamSlots() {
+  return TEAM.positions.map(role => {
+    const invs = APP_STATE.invitations.filter(i => i.role === role);
+    const inv = invs.find(i => i.status === 'accepted') || invs.find(i => i.status === 'pending');
+
+    if (!inv) return { role, status: 'vacant', candidate: null };
+
+    return {
+      role,
+      status: inv.status === 'accepted' ? 'accepted' : 'pending',
+      candidate: getCandidate(inv.candidateId),
+    };
+  });
+}
+
+/** Sinkronkan class .active dan aria-selected pada sekelompok tombol tab/chip. */
+function syncActiveButtons(selector, isMatch) {
+  document.querySelectorAll(selector).forEach(btn => {
+    const active = isMatch(btn);
+    btn.classList.toggle('active', active);
+    btn.setAttribute('aria-selected', String(active));
+  });
+}
+
+// ============================================================================
+// 2. PEMUAT LAYAR & ROUTING SPA
+// ============================================================================
+
+async function loadHTML(file) {
   try {
-    const res = await fetch(filePath);
+    const res = await fetch(file);
     if (!res.ok) throw new Error(`HTTP ${res.status}`);
     return await res.text();
-  } catch (error) {
-    console.error(`Gagal memuat ${filePath}:`, error);
-    return '';
+  } catch (err) {
+    console.error(`Gagal memuat ${file}:`, err);
+    return `<div class="alert alert-danger m-3">Gagal memuat <code>${esc(file)}</code>. Pastikan aplikasi dijalankan lewat server lokal.</div>`;
   }
 }
 
-async function loadAllScreens() {
-  const mainContainer = document.getElementById('mainContainer');
-  const modalContainer = document.getElementById('modalContainer');
-
-  const mainScreenConfigs = [
-    { id: 'screen-dashboard', file: 'screens/screen-dashboard.html' },
-    { id: 'screen-profile', file: 'screens/screen-profile.html' },
-    { id: 'screen-invitations', file: 'screens/screen-invitations.html' },
-    { id: 'screen-team', file: 'screens/screen-team.html' }
-  ];
-
-  const mainHtmls = await Promise.all(
-    mainScreenConfigs.map(cfg => loadScreenHTML(cfg.id, cfg.file))
-  );
-
-  if (mainContainer) {
-    mainContainer.innerHTML = mainHtmls.join('\n');
-  }
-
-  const modalHtml = await loadScreenHTML('modal-invite', 'screens/modal-invite.html');
-  if (modalContainer) {
-    modalContainer.innerHTML = modalHtml;
-  }
+async function loadScreens() {
+  const htmls = await Promise.all(SCREEN_FILES.map(loadHTML));
+  setHTML('mainContainer', htmls.join('\n'));
+  setHTML('modalContainer', await loadHTML('screens/modal-invite.html'));
 }
 
-function navigateToScreen(targetScreenId, updateUrl = true) {
-  APP_STATE.currentScreen = targetScreenId;
+function screenFromHash() {
+  const route = window.location.hash.slice(1);
+  return Object.keys(SCREENS).find(id => SCREENS[id] === route) || APP_CONFIG.defaultScreen;
+}
 
-  if (updateUrl && SCREEN_ROUTES[targetScreenId]) {
-    const nextHash = `#${SCREEN_ROUTES[targetScreenId]}`;
-    if (window.location.hash !== nextHash) {
-      window.history.pushState(null, '', nextHash);
-    }
+function navigateToScreen(screenId, updateUrl = true) {
+  if (!SCREENS[screenId]) return;
+  APP_STATE.activeScreen = screenId;
+
+  if (updateUrl) {
+    const hash = `#${SCREENS[screenId]}`;
+    if (window.location.hash !== hash) window.history.pushState(null, '', hash);
   }
 
-  Object.keys(DOM.screens).forEach(key => {
-    const screenEl = DOM.screens[key];
-    if (screenEl) {
-      if (screenEl.id === targetScreenId) {
-        screenEl.classList.remove('d-none');
-        screenEl.classList.add('active');
-      } else {
-        screenEl.classList.add('d-none');
-        screenEl.classList.remove('active');
-      }
-    }
+  document.querySelectorAll('.screen-section').forEach(section => {
+    const isActive = section.id === screenId;
+    section.classList.toggle('d-none', !isActive);
+    section.classList.toggle('active', isActive);
   });
 
-  DOM.navTabs.forEach(tab => {
-    const target = tab.getAttribute('data-target-screen');
-    const shouldBeActive = target === targetScreenId || (targetScreenId === 'screen-profile' && target === 'screen-dashboard');
-    if (shouldBeActive) {
-      tab.classList.add('active');
-      tab.setAttribute('aria-current', 'page');
-    } else {
-      tab.classList.remove('active');
-      tab.removeAttribute('aria-current');
-    }
+  document.querySelectorAll('[data-target-screen]').forEach(tab => {
+    const target = tab.dataset.targetScreen;
+    const isActive = target === screenId || (screenId === 'screen-profile' && target === 'screen-dashboard');
+    tab.classList.toggle('active', isActive);
+    if (isActive) tab.setAttribute('aria-current', 'page');
+    else tab.removeAttribute('aria-current');
   });
 
-  if (targetScreenId === 'screen-dashboard') {
-    renderCandidates();
-  } else if (targetScreenId === 'screen-invitations') {
-    renderInvitations();
-  } else if (targetScreenId === 'screen-team') {
-    renderTeamPositions();
-  }
-
+  renderScreen(screenId);
   window.scrollTo(0, 0);
 }
 
-window.navigateToScreen = navigateToScreen;
+const SCREEN_RENDERERS = {
+  'screen-dashboard': renderCandidates,
+  'screen-profile': renderProfile,
+  'screen-invitations': renderInvitations,
+  'screen-team': renderTeam,
+};
 
-let searchDebounceTimeout = null;
-
-function handleSearchInput(e) {
-  const query = e.target.value.trim();
-  APP_STATE.searchQuery = query;
-
-  if (DOM.loadingSpinner && DOM.candidatesContainer) {
-    DOM.loadingSpinner.classList.remove('d-none');
-    DOM.candidatesContainer.classList.add('d-none');
-    DOM.emptyState.classList.add('d-none');
-  }
-
-  clearTimeout(searchDebounceTimeout);
-  searchDebounceTimeout = setTimeout(() => {
-    if (DOM.loadingSpinner) {
-      DOM.loadingSpinner.classList.add('d-none');
-    }
-    renderCandidates();
-  }, 650);
+function renderScreen(screenId) {
+  SCREEN_RENDERERS[screenId]?.();
 }
 
-function filterCandidatesData() {
-  return APP_STATE.candidates.filter(candidate => {
-    if (APP_STATE.searchQuery) {
-      const q = APP_STATE.searchQuery.toLowerCase();
-      const matchName = candidate.name.toLowerCase().includes(q);
-      const matchProdi = candidate.prodi.toLowerCase().includes(q);
-      const matchSkills = candidate.skills.some(s => s.toLowerCase().includes(q));
-      const matchCategories = candidate.categories.some(c => c.toLowerCase().includes(q));
-      if (!matchName && !matchProdi && !matchSkills && !matchCategories) {
-        return false;
-      }
-    }
+// ============================================================================
+// 3. DASBOR & FILTER KANDIDAT
+// ============================================================================
 
-    if (APP_STATE.activeCategory !== 'Semua') {
-      if (!candidate.categories.includes(APP_STATE.activeCategory)) {
-        return false;
-      }
-    }
+/** Render daftar kategori kompetisi & opsi checkbox filter dari data/konfigurasi. */
+function initDashboardControls() {
+  setHTML('categoryChipGroup', COMPETITION_CATEGORIES.map(cat => `
+    <button class="category-chip" data-category="${esc(cat)}" role="tab" aria-selected="false">
+      <span>${esc(cat)}</span>
+    </button>
+  `).join(''));
 
-    if (APP_STATE.filterProdi.length > 0) {
-      if (!APP_STATE.filterProdi.includes(candidate.faculty)) {
-        return false;
-      }
-    }
+  const checkboxPill = (name, value, label) => `
+    <label class="checkbox-pill-label">
+      <input type="checkbox" name="${name}" value="${esc(value)}">
+      <span>${esc(label)}</span>
+    </label>`;
 
-    if (APP_STATE.filterSkills.length > 0) {
-      const hasAnySkill = candidate.skills.some(s => APP_STATE.filterSkills.includes(s));
-      if (!hasAnySkill) {
-        return false;
-      }
+  setHTML('filterProdiGroup', FILKOM_PROGRAMS.map(p =>
+    checkboxPill('filterProdi', p.value, p.label)
+  ).join(''));
+
+  const uniqueSkills = [...new Set(CANDIDATES.flatMap(c => c.skills))];
+  setHTML('filterSkillGroup', uniqueSkills.map(skill =>
+    checkboxPill('filterSkill', skill, skill)
+  ).join(''));
+}
+
+function getFilteredCandidates() {
+  const q = APP_STATE.query.toLowerCase();
+
+  return CANDIDATES.filter(c => {
+    if (!c.listed) return false;
+
+    if (q) {
+      const haystack = [c.name, c.program, ...c.skills, ...c.categories].join(' ').toLowerCase();
+      if (!haystack.includes(q)) return false;
     }
+    if (APP_STATE.category && !c.categories.includes(APP_STATE.category)) return false;
+    if (APP_STATE.filterProdi.length && !APP_STATE.filterProdi.includes(c.program)) return false;
+    if (APP_STATE.filterSkills.length && !c.skills.some(s => APP_STATE.filterSkills.includes(s))) return false;
 
     return true;
   });
+}
+
+function candidateCardHTML(c) {
+  const theme = c.isFeatured ? 'blue' : 'mint';
+  const textClass = theme === 'mint' ? ' text-dark' : '';
+  const subClass = theme === 'mint' ? ' text-secondary' : '';
+
+  const action = hasPortfolio(c)
+    ? `<button class="btn-cta-cyan btn-view-profile" data-view-profile="${esc(c.id)}"><span>Lihat Profil</span></button>`
+    : `<button class="btn-outline-card-disabled" disabled aria-disabled="true"><span>Belum tersedia</span></button>`;
+
+  return `
+    <article class="candidate-card candidate-card-${theme}" aria-label="Profil ${esc(c.name)}">
+      <div class="candidate-card-main">
+        <div class="candidate-avatar ${avatarClass(c)}" aria-hidden="true">${esc(c.initials)}</div>
+        <div class="candidate-info">
+          <h3 class="candidate-name${textClass}">${esc(c.name)}</h3>
+          <div class="candidate-meta${subClass}">${esc(prodiLabel(c))}</div>
+          <div class="tag-container">
+            ${c.skills.map(s => `<span class="tag-skill">${esc(s)}</span>`).join('')}
+          </div>
+          <div class="candidate-interest${subClass}">Minat: ${esc(c.categories.join(', '))}</div>
+        </div>
+      </div>
+      <div class="candidate-card-side">
+        <span class="candidate-badge-portfolio">${hasPortfolio(c) ? 'Portofolio tersedia' : 'Profil belum tersedia'}</span>
+        ${action}
+      </div>
+    </article>`;
+}
+
+function setResultsView(view) {
+  el('candidatesLoadingSpinner')?.classList.toggle('d-none', view !== 'loading');
+  el('candidatesListContainer')?.classList.toggle('d-none', view !== 'list');
+  el('candidatesEmptyState')?.classList.toggle('d-none', view !== 'empty');
 }
 
 function renderCandidates() {
-  const filtered = filterCandidatesData();
+  const list = getFilteredCandidates();
+  setText('candidatesCountLabel', `Semua kandidat (${list.length})`);
+  syncActiveButtons('[data-category]', chip => chip.dataset.category === APP_STATE.category);
 
-  if (DOM.candidatesCountLabel) {
-    DOM.candidatesCountLabel.textContent = `Semua kandidat (${filtered.length})`;
-  }
-
-  if (filtered.length === 0) {
-    DOM.candidatesContainer.classList.add('d-none');
-    DOM.emptyState.classList.remove('d-none');
-    if (DOM.emptyStateQueryText) {
-      DOM.emptyStateQueryText.textContent = APP_STATE.searchQuery ? `"${APP_STATE.searchQuery}"` : 'filter yang dipilih';
-    }
+  if (list.length === 0) {
+    setText('emptyStateQueryText', APP_STATE.query ? `"${APP_STATE.query}"` : 'filter yang dipilih');
+    setResultsView('empty');
     return;
   }
 
-  DOM.emptyState.classList.add('d-none');
-  DOM.candidatesContainer.classList.remove('d-none');
-  DOM.candidatesContainer.innerHTML = '';
+  setHTML('candidatesListContainer', list.map(candidateCardHTML).join(''));
+  setResultsView('list');
+}
 
-  filtered.forEach(c => {
-    const card = document.createElement('article');
+function setCategory(category) {
+  APP_STATE.category = category;
+  renderCandidates();
+}
 
-    if (c.id === 'alya') {
-      card.className = 'candidate-card candidate-card-blue';
-      card.setAttribute('aria-label', `Profil ${c.name}`);
-      card.innerHTML = `
-        <div class="candidate-card-main">
-          <div class="candidate-avatar avatar-alya" aria-hidden="true">${c.initials}</div>
-          <div class="candidate-info">
-            <h3 class="candidate-name">${c.name}</h3>
-            <div class="candidate-meta">${c.prodi}</div>
-            <div class="tag-container">
-              ${c.skills.map(skill => `<span class="tag-skill">${skill}</span>`).join('')}
-            </div>
-            <div class="candidate-interest">Minat: ${c.categories.join(', ')}</div>
-          </div>
-        </div>
-        <div class="candidate-card-side">
-          <span class="candidate-badge-portfolio">Portofolio tersedia</span>
-          <button class="btn-cta-cyan btn-view-profile" data-candidate-id="${c.id}">
-            <span>Lihat Profil</span>
-          </button>
-        </div>
-      `;
-    } else {
-      card.className = 'candidate-card candidate-card-mint';
-      card.setAttribute('aria-label', `Profil ${c.name}`);
-      card.innerHTML = `
-        <div class="candidate-card-main">
-          <div class="candidate-avatar avatar-bima" aria-hidden="true">${c.initials}</div>
-          <div class="candidate-info">
-            <h3 class="candidate-name text-dark">${c.name}</h3>
-            <div class="candidate-meta text-secondary">${c.prodi}</div>
-            <div class="tag-container">
-              ${c.skills.map(skill => `<span class="tag-skill">${skill}</span>`).join('')}
-            </div>
-            <div class="candidate-interest text-secondary">Minat: ${c.categories.join(', ')}</div>
-          </div>
-        </div>
-        <div class="candidate-card-side">
-          <span class="candidate-badge-portfolio">Profil belum tersedia</span>
-          <button class="btn-outline-card-disabled" disabled aria-disabled="true">
-            <span>Belum tersedia</span>
-          </button>
-        </div>
-      `;
-    }
+let searchTimer = null;
 
-    DOM.candidatesContainer.appendChild(card);
-  });
+function onSearchInput(e) {
+  APP_STATE.query = e.target.value.trim();
+  setResultsView('loading');
+  clearTimeout(searchTimer);
+  searchTimer = setTimeout(renderCandidates, APP_CONFIG.searchDebounceMs);
+}
 
-  document.querySelectorAll('.btn-view-profile').forEach(btn => {
-    btn.addEventListener('click', () => {
-      navigateToScreen('screen-profile');
-    });
-  });
+function clearFilterCheckboxes() {
+  document.querySelectorAll('input[name="filterProdi"], input[name="filterSkill"]')
+    .forEach(i => { i.checked = false; });
+}
+
+function resetDashboardFilters() {
+  APP_STATE.query = '';
+  APP_STATE.filterProdi = [];
+  APP_STATE.filterSkills = [];
+  APP_STATE.category = APP_CONFIG.defaultCategory;
+
+  const input = el('candidateSearchInput');
+  if (input) input.value = '';
+  clearFilterCheckboxes();
+}
+
+function openFilterDialog() {
+  document.querySelectorAll('input[name="filterProdi"]')
+    .forEach(i => { i.checked = APP_STATE.filterProdi.includes(i.value); });
+  document.querySelectorAll('input[name="filterSkill"]')
+    .forEach(i => { i.checked = APP_STATE.filterSkills.includes(i.value); });
+  el('filterDialog')?.showModal();
+}
+
+function readCheckedValues(name) {
+  return [...document.querySelectorAll(`input[name="${name}"]:checked`)].map(i => i.value);
+}
+
+function applyFilters() {
+  APP_STATE.filterProdi = readCheckedValues('filterProdi');
+  APP_STATE.filterSkills = readCheckedValues('filterSkill');
+  el('filterDialog')?.close();
+  renderCandidates();
+  const total = APP_STATE.filterProdi.length + APP_STATE.filterSkills.length;
+  showToast(`Filter diterapkan: ${total} kriteria aktif.`);
+}
+
+function resetFilters() {
+  APP_STATE.filterProdi = [];
+  APP_STATE.filterSkills = [];
+  clearFilterCheckboxes();
+  el('filterDialog')?.close();
+  renderCandidates();
+  showToast('Filter kriteria berhasil direset.');
+}
+
+// ============================================================================
+// 4. PROFIL KANDIDAT
+// ============================================================================
+
+function tagsHTML(items, className) {
+  if (!items.length) return '<span class="text-muted">Belum diisi</span>';
+  return items.map(item => `<span class="${className}">${esc(item)}</span>`).join('');
+}
+
+function portfolioHTML(p) {
+  return `
+    <article class="portfolio-card-${esc(p.type)} mb-3">
+      <div class="row align-items-center">
+        <div class="col-12 col-md-8">
+          <h3 class="portfolio-title">${esc(p.title)}</h3>
+          <p class="portfolio-desc">${esc(p.desc)}</p>
+          <div class="text-caption mb-2">${esc(p.tag)}</div>
+          <div class="pt-2"><span class="portfolio-pill-btn">${esc(p.statusText)}</span></div>
+        </div>
+        <div class="col-12 col-md-4 text-center d-none d-md-block">
+          <i class="bi ${esc(p.icon)} portfolio-icon" aria-hidden="true"></i>
+        </div>
+      </div>
+    </article>`;
+}
+
+function renderProfile() {
+  const c = getCandidate(APP_STATE.selectedCandidateId);
+  if (!c) return;
+
+  setText('profileAvatar', c.initials);
+  setText('profileCandidateName', c.name);
+  setText('profileSub', c.semester ? `${c.program} • Semester ${c.semester}` : c.program);
+  setText('profileBio', c.bio);
+  setHTML('profileSkills', tagsHTML(c.skills, 'profile-tag-pill'));
+  setHTML('profileCategories', tagsHTML(c.categories, 'profile-tag-pill'));
+  setHTML('portfolioList', c.portfolios.length
+    ? c.portfolios.map(portfolioHTML).join('')
+    : '<p class="text-muted">Belum ada portofolio.</p>');
+}
+
+// ============================================================================
+// 5. MODAL KIRIM UNDANGAN
+// ============================================================================
+
+function setInviteError(visible) {
+  const alert = el('inviteErrorAlert');
+  if (alert) alert.style.display = visible ? 'flex' : 'none';
+}
+
+function renderRoleOptions(candidate) {
+  const slots = getTeamSlots();
+
+  setHTML('roleRadioGroup', slots.map(slot => {
+    const takenByOther = slot.status === 'accepted' && slot.candidate?.id !== candidate.id;
+    const role = esc(slot.role);
+
+    return `
+      <label class="role-radio-label" ${takenByOther ? 'style="opacity:.55"' : ''}>
+        <input type="radio" name="selectedRole" value="${role}" class="role-radio-input" ${takenByOther ? 'disabled' : ''}>
+        <span class="role-title">${role}${takenByOther ? ' <small>(sudah terisi)</small>' : ''}</span>
+      </label>`;
+  }).join(''));
 }
 
 function openInviteModal() {
-  if (!DOM.inviteDialog) return;
-  
-  DOM.inviteRoleInputs.forEach(input => {
-    input.checked = false;
-    const label = input.closest('.role-radio-label');
-    if (label) label.classList.remove('selected');
-  });
-  
-  if (DOM.inviteErrorAlert) {
-    DOM.inviteErrorAlert.style.display = 'none';
-  }
+  const c = getCandidate(APP_STATE.selectedCandidateId);
+  if (!c) return;
 
-  if (typeof DOM.inviteDialog.showModal === 'function') {
-    DOM.inviteDialog.showModal();
-  } else {
-    DOM.inviteDialog.setAttribute('open', 'true');
-  }
-}
-
-function closeInviteModal() {
-  if (!DOM.inviteDialog) return;
-  if (typeof DOM.inviteDialog.close === 'function') {
-    DOM.inviteDialog.close();
-  } else {
-    DOM.inviteDialog.removeAttribute('open');
-  }
-}
-
-function handleInviteFormSubmit() {
-  const selectedRadio = document.querySelector('input[name="selectedRole"]:checked');
-
-  if (!selectedRadio) {
-    if (DOM.inviteErrorAlert) {
-      DOM.inviteErrorAlert.style.display = 'flex';
-      DOM.inviteErrorAlert.focus();
-    }
+  const accepted = APP_STATE.invitations.find(i => i.candidateId === c.id && i.status === 'accepted');
+  if (accepted) {
+    showToast(`${c.name} sudah menerima undangan sebagai ${accepted.role}.`);
     return;
   }
 
-  const selectedRole = selectedRadio.value;
+  setText('inviteModalTitle', `Undang ${c.name} ke Tim?`);
+  setText('inviteInstruction', `Undangan untuk peran yang dipilih akan dikirim kepada ${c.name}. Status undangan akan menjadi Menunggu hingga kandidat memberikan respons.`);
+  setText('inviteAvatar', c.initials);
+  setText('inviteCandidateName', c.name);
+  setText('inviteCandidateProgram', c.program);
+  setText('roleHelperNote', `Pilih satu peran untuk ${c.name}.`);
 
-  const originalBtnContent = DOM.btnSubmitInvite.innerHTML;
-  DOM.btnSubmitInvite.disabled = true;
-  DOM.btnSubmitInvite.innerHTML = `
-    <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
-    <span>Mengirim...</span>
-  `;
+  renderRoleOptions(c);
+  setInviteError(false);
+  el('modal-invite')?.showModal();
+}
+
+function closeInviteModal() {
+  el('modal-invite')?.close();
+}
+
+function upsertInvitation(candidateId, role) {
+  const date = todayISO();
+  const existing = APP_STATE.invitations.find(i => i.candidateId === candidateId);
+
+  if (existing) {
+    Object.assign(existing, { role, status: 'pending', date, isNew: false });
+  } else {
+    APP_STATE.invitations.unshift({
+      id: `inv-${Date.now()}`,
+      candidateId,
+      role,
+      status: 'pending',
+      date,
+      isNew: false,
+    });
+  }
+}
+
+function submitInvite() {
+  const picked = document.querySelector('input[name="selectedRole"]:checked');
+  if (!picked) {
+    setInviteError(true);
+    el('inviteErrorAlert')?.focus();
+    return;
+  }
+
+  const role = picked.value;
+  const candidate = getCandidate(APP_STATE.selectedCandidateId);
+  const btn = el('btnSubmitInvite');
+  const originalHTML = btn.innerHTML;
+
+  btn.disabled = true;
+  btn.innerHTML = `
+    <span class="spinner-border spinner-border-sm" aria-hidden="true"></span>
+    <span>Mengirim...</span>`;
 
   setTimeout(() => {
-    const existingIndex = APP_STATE.invitations.findIndex(inv => inv.candidateId === 'alya');
-    const today = '10 Nov 2026';
+    upsertInvitation(candidate.id, role);
 
-    if (existingIndex !== -1) {
-      APP_STATE.invitations[existingIndex].status = 'pending';
-      APP_STATE.invitations[existingIndex].role = selectedRole;
-      APP_STATE.invitations[existingIndex].date = today;
-    } else {
-      APP_STATE.invitations.unshift({
-        id: `inv-${Date.now()}`,
-        candidateName: 'Alya Putri',
-        initials: 'AP',
-        candidateId: 'alya',
-        role: selectedRole,
-        date: today,
-        status: 'pending',
-        isNew: false
-      });
-    }
-
-    const slotToUpdate = APP_STATE.team.slots.find(s => s.role === selectedRole);
-    if (slotToUpdate) {
-      slotToUpdate.status = 'pending';
-      slotToUpdate.candidateName = 'Alya Putri';
-      slotToUpdate.initials = 'AP';
-      slotToUpdate.prodi = 'Teknik Informatika - Semester 5';
-    }
-
-    DOM.btnSubmitInvite.disabled = false;
-    DOM.btnSubmitInvite.innerHTML = originalBtnContent;
-
+    btn.disabled = false;
+    btn.innerHTML = originalHTML;
     closeInviteModal();
 
-    showToast(`Undangan untuk posisi ${selectedRole} berhasil dikirim ke Alya Putri!`);
-
+    refreshAll();
+    showToast(`Undangan untuk posisi ${role} berhasil dikirim ke ${candidate.name}!`);
     navigateToScreen('screen-invitations');
-  }, 800);
+  }, APP_CONFIG.inviteSubmitDelayMs);
+}
+
+/** Tutup <dialog> ketika pengguna mengklik area backdrop di luar kotak modal. */
+function bindDialogBackdrop(dialogId) {
+  const dialog = el(dialogId);
+  if (!dialog) return;
+
+  dialog.addEventListener('click', e => {
+    const r = dialog.getBoundingClientRect();
+    const inside = e.clientX >= r.left && e.clientX <= r.right
+                && e.clientY >= r.top && e.clientY <= r.bottom;
+    if (!inside) dialog.close();
+  });
+}
+
+// ============================================================================
+// 6. HALAMAN UNDANGAN & NOTIFIKASI
+// ============================================================================
+
+function initInvitationTabs() {
+  setHTML('invitationStatusTabs', INVITATION_TABS.map(tab => `
+    <button class="status-tab-btn ${esc(tab.className)}" data-status="${esc(tab.label)}" role="tab" aria-selected="false">
+      <span>${esc(tab.label)}</span>
+    </button>
+  `).join(''));
+}
+
+function invitationCandidateInfo(inv) {
+  return getCandidate(inv.candidateId) || {
+    id: inv.candidateId,
+    name: 'Kandidat',
+    initials: '?',
+    program: '-',
+    avatarTheme: 'blue',
+  };
+}
+
+function invitationRowHTML(inv) {
+  const c = invitationCandidateInfo(inv);
+  return `
+    <tr class="status-${esc(inv.status)}">
+      <td>
+        <div class="candidate-cell-flex">
+          <div class="cell-avatar ${avatarClass(c)}">${esc(c.initials)}</div>
+          <div>
+            <div class="candidate-table-name">
+              <strong class="text-dark">${esc(c.name)}</strong>
+              ${inv.isNew ? '<span class="badge-new ms-2">Baru</span>' : ''}
+            </div>
+            <div class="text-caption text-muted">${esc(c.program)}</div>
+          </div>
+        </div>
+      </td>
+      <td><span class="badge-role-lavender">${esc(inv.role)}</span></td>
+      <td class="text-secondary">${formatDate(inv.date)}</td>
+      <td>${statusBadge(inv.status)}</td>
+      <td class="text-secondary">${esc(STATUS[inv.status]?.note || '')}</td>
+    </tr>`;
+}
+
+function invitationCardHTML(inv) {
+  const c = invitationCandidateInfo(inv);
+  return `
+    <div class="invitation-mobile-card status-${esc(inv.status)}">
+      <div class="d-flex align-items-center justify-content-between mb-2">
+        <div class="d-flex align-items-center gap-2">
+          <div class="cell-avatar ${avatarClass(c)}">${esc(c.initials)}</div>
+          <div>
+            <strong class="text-dark fs-6">${esc(c.name)}</strong>
+            <div class="text-caption text-muted">${esc(c.program)}</div>
+          </div>
+        </div>
+        ${inv.isNew ? '<span class="badge-new">Baru</span>' : ''}
+      </div>
+      <div class="mb-2"><span class="badge-role-lavender">Peran: ${esc(inv.role)}</span></div>
+      <div class="d-flex justify-content-between align-items-center">
+        <span class="text-caption text-muted">Dikirim: ${formatDate(inv.date)}</span>
+        <div>${statusBadge(inv.status)}</div>
+      </div>
+    </div>`;
 }
 
 function renderInvitations() {
-  const pendingCount = APP_STATE.invitations.filter(i => i.status === 'pending').length;
-  const acceptedCount = APP_STATE.invitations.filter(i => i.status === 'accepted').length;
-  const rejectedCount = APP_STATE.invitations.filter(i => i.status === 'rejected').length;
-
-  if (DOM.countPending) DOM.countPending.textContent = pendingCount;
-  if (DOM.countAccepted) DOM.countAccepted.textContent = acceptedCount;
-  if (DOM.countRejected) DOM.countRejected.textContent = rejectedCount;
-
-  const filtered = APP_STATE.invitations.filter(inv => {
-    if (APP_STATE.invitationStatusFilter === 'Semua') return true;
-    if (APP_STATE.invitationStatusFilter === 'Menunggu') return inv.status === 'pending';
-    if (APP_STATE.invitationStatusFilter === 'Diterima') return inv.status === 'accepted';
-    if (APP_STATE.invitationStatusFilter === 'Ditolak') return inv.status === 'rejected';
-    return true;
+  const counts = { pending: 0, accepted: 0, rejected: 0 };
+  APP_STATE.invitations.forEach(i => {
+    if (counts[i.status] !== undefined) counts[i.status]++;
   });
+  setText('countPending', counts.pending);
+  setText('countAccepted', counts.accepted);
+  setText('countRejected', counts.rejected);
 
-  if (DOM.invitationsTableBody) {
-    DOM.invitationsTableBody.innerHTML = '';
-    if (filtered.length === 0) {
-      DOM.invitationsTableBody.innerHTML = `
-        <tr>
-          <td colspan="5" class="text-center py-4 text-muted">
-            Tidak ada undangan dengan status "${APP_STATE.invitationStatusFilter}".
-          </td>
-        </tr>
-      `;
-    } else {
-      filtered.forEach(inv => {
-        const tr = document.createElement('tr');
-        tr.className = `status-${inv.status}`;
-        
-        let statusBadgeHtml = '';
-        let keteranganText = '';
-        if (inv.status === 'pending') {
-          statusBadgeHtml = `<span class="status-badge status-badge-pending"><i class="bi bi-clock"></i> Menunggu</span>`;
-          keteranganText = 'Menunggu respons';
-        } else if (inv.status === 'accepted') {
-          statusBadgeHtml = `<span class="status-badge status-badge-accepted"><i class="bi bi-check-lg"></i> Diterima</span>`;
-          keteranganText = 'Peran terisi';
-        } else if (inv.status === 'rejected') {
-          statusBadgeHtml = `<span class="status-badge status-badge-rejected"><i class="bi bi-x-lg"></i> Ditolak</span>`;
-          keteranganText = 'Slot peran tetap kosong';
-        }
+  syncActiveButtons('.status-tab-btn', btn => btn.dataset.status === APP_STATE.invitationFilter);
 
-        const newBadge = inv.isNew ? `<span class="badge-new ms-2">Baru</span>` : '';
+  const activeTab = INVITATION_TABS.find(t => t.label === APP_STATE.invitationFilter);
+  const wanted = activeTab?.status || null;
+  const list = APP_STATE.invitations.filter(i => !wanted || i.status === wanted);
 
-        tr.innerHTML = `
-          <td>
-            <div class="candidate-cell-flex">
-              <div class="cell-avatar avatar-${inv.candidateId}">${inv.initials}</div>
-              <div>
-                <div class="candidate-table-name">
-                  <strong class="text-dark">${inv.candidateName}</strong>
-                  ${newBadge}
-                </div>
-                <div class="text-caption text-muted">${inv.prodi || 'Teknik Informatika'}</div>
-              </div>
-            </div>
-          </td>
-          <td><span class="badge-role-lavender">${inv.role}</span></td>
-          <td class="text-secondary">${inv.date}</td>
-          <td>${statusBadgeHtml}</td>
-          <td class="text-secondary">${keteranganText}</td>
-        `;
-
-        DOM.invitationsTableBody.appendChild(tr);
-      });
-    }
+  if (list.length === 0) {
+    const label = esc(APP_STATE.invitationFilter);
+    setHTML('invitationsTableBody', `
+      <tr><td colspan="5" class="text-center py-4 text-muted">Tidak ada undangan dengan status "${label}".</td></tr>`);
+    setHTML('invitationsMobileList', `
+      <div class="empty-state-box py-4"><p class="text-muted mb-0">Tidak ada undangan dengan status "${label}".</p></div>`);
+    return;
   }
 
-  if (DOM.invitationsMobileList) {
-    DOM.invitationsMobileList.innerHTML = '';
-    if (filtered.length === 0) {
-      DOM.invitationsMobileList.innerHTML = `
-        <div class="empty-state-box py-4">
-          <p class="text-muted mb-0">Tidak ada undangan dengan status "${APP_STATE.invitationStatusFilter}".</p>
-        </div>
-      `;
-    } else {
-      filtered.forEach(inv => {
-        const card = document.createElement('div');
-        card.className = `invitation-mobile-card status-${inv.status}`;
-        
-        let statusBadgeHtml = '';
-        if (inv.status === 'pending') {
-          statusBadgeHtml = `<span class="status-badge status-badge-pending"><i class="bi bi-clock"></i> Menunggu</span>`;
-        } else if (inv.status === 'accepted') {
-          statusBadgeHtml = `<span class="status-badge status-badge-accepted"><i class="bi bi-check-lg"></i> Diterima</span>`;
-        } else if (inv.status === 'rejected') {
-          statusBadgeHtml = `<span class="status-badge status-badge-rejected"><i class="bi bi-x-lg"></i> Ditolak</span>`;
-        }
-
-        const newBadge = inv.isNew ? `<span class="badge-new">Baru</span>` : '';
-
-        card.innerHTML = `
-          <div class="d-flex align-items-center justify-content-between mb-2">
-            <div class="d-flex align-items-center gap-2">
-              <div class="cell-avatar avatar-${inv.candidateId}">${inv.initials}</div>
-              <div>
-                <strong class="text-dark fs-6">${inv.candidateName}</strong>
-                <div class="text-caption text-muted">${inv.prodi || 'Teknik Informatika'}</div>
-              </div>
-            </div>
-            ${newBadge}
-          </div>
-          <div class="mb-2">
-            <span class="badge-role-lavender">Peran: ${inv.role}</span>
-          </div>
-          <div class="d-flex justify-content-between align-items-center">
-            <span class="text-caption text-muted">Dikirim: ${inv.date}</span>
-            <div>${statusBadgeHtml}</div>
-          </div>
-        `;
-
-        DOM.invitationsMobileList.appendChild(card);
-      });
-    }
-  }
-
-  document.querySelectorAll('.btn-open-profile-from-table').forEach(btn => {
-    btn.addEventListener('click', () => {
-      navigateToScreen('screen-profile');
-    });
-  });
+  setHTML('invitationsTableBody', list.map(invitationRowHTML).join(''));
+  setHTML('invitationsMobileList', list.map(invitationCardHTML).join(''));
 }
 
-function renderTeamPositions() {
-  const slots = APP_STATE.team.slots;
-  const totalSlots = slots.length;
-  const acceptedCount = slots.filter(s => s.status === 'accepted').length;
-  const pendingCount = slots.filter(s => s.status === 'pending').length;
-  const vacantCount = slots.filter(s => s.status === 'vacant').length;
+function setInvitationFilter(label) {
+  APP_STATE.invitationFilter = label;
+  renderInvitations();
+}
 
-  if (DOM.teamFilledCount) DOM.teamFilledCount.textContent = acceptedCount;
-  if (DOM.teamPendingCount) DOM.teamPendingCount.textContent = pendingCount;
-  if (DOM.teamVacantCount) DOM.teamVacantCount.textContent = vacantCount;
+function updateUnreadUI() {
+  const unread = APP_STATE.invitations.filter(i => i.isNew).length;
 
-  if (DOM.teamProgressText) {
-    DOM.teamProgressText.textContent = `${acceptedCount} dari ${totalSlots} posisi terisi`;
+  const badge = el('unreadBadgeCount');
+  if (badge) {
+    badge.textContent = unread;
+    badge.style.display = unread ? '' : 'none';
   }
 
-  const progressPercent = Math.round((acceptedCount / totalSlots) * 100);
-  if (DOM.teamProgressBarFill) {
-    DOM.teamProgressBarFill.style.width = `${progressPercent}%`;
-    DOM.teamProgressBarFill.parentElement?.setAttribute('aria-valuenow', progressPercent);
+  setText('statusUpdateCountText', `${unread} pembaruan status`);
+  el('statusUpdateBanner')?.classList.toggle('d-none', unread === 0);
+}
+
+function dismissUpdates() {
+  APP_STATE.invitations.forEach(i => { i.isNew = false; });
+  refreshAll();
+  showToast('Pembaruan status telah ditandai sebagai sudah dibaca.');
+}
+
+// ============================================================================
+// 7. HALAMAN TIM SAYA
+// ============================================================================
+
+function slotCardHTML(slot) {
+  const role = esc(slot.role);
+  const c = slot.candidate;
+  let avatar;
+  let info;
+  let action = '';
+
+  if (slot.status === 'accepted' && c) {
+    avatar = `<div class="slot-avatar ${avatarClass(c)}">${esc(c.initials)}</div>`;
+    info = `<strong class="slot-name">${esc(c.name)}</strong><span class="slot-sub">Undangan diterima</span>`;
+  } else if (slot.status === 'pending' && c) {
+    avatar = `<div class="slot-avatar ${avatarClass(c)}">${esc(c.initials)}</div>`;
+    info = `<strong class="slot-name">${esc(c.name)}</strong><span class="slot-sub">Undangan terkirim &bull; Belum menerima</span>`;
+    action = `<button class="btn btn-sm btn-outline-dark rounded-pill" data-view-invitations>Lihat Undangan</button>`;
+  } else {
+    avatar = `<div class="slot-avatar avatar-empty"><i class="bi bi-dash-lg"></i></div>`;
+    info = `<strong class="slot-name">Belum ada kandidat</strong><span class="slot-sub">Belum ada kandidat yang ditugaskan</span>`;
+    action = `<button class="btn-cta-cyan btn-sm" data-fill-role="${role}">+ Cari Kandidat</button>`;
   }
 
-  if (DOM.teamSlotsContainer) {
-    DOM.teamSlotsContainer.innerHTML = '';
+  return `
+    <article class="position-slot-card status-${esc(slot.status)}" aria-label="Posisi ${role} - ${esc(STATUS[slot.status].label)}">
+      <div class="slot-role-box"><span>${role}</span></div>
+      ${avatar}
+      <div class="slot-info-box">${info}</div>
+      <div class="slot-status-box ms-auto d-flex flex-column align-items-end gap-2">
+        ${statusBadge(slot.status)}
+        ${action}
+      </div>
+    </article>`;
+}
 
-    slots.forEach(slot => {
-      const card = document.createElement('article');
-      card.className = `position-slot-card status-${slot.status}`;
-      card.setAttribute('aria-label', `Posisi ${slot.role} - Status ${slot.status}`);
+function renderTeam() {
+  setText('teamName', TEAM.name);
+  setText('teamCategory', `Kategori kompetisi: ${TEAM.category}`);
+  setText('teamDescription', TEAM.description);
 
-      let statusBadge = '';
-      let avatarHtml = '';
-      let infoHtml = '';
+  const slots = getTeamSlots();
+  const total = slots.length || 1;
+  const filled = slots.filter(s => s.status === 'accepted').length;
+  const pending = slots.filter(s => s.status === 'pending').length;
+  const vacant = slots.filter(s => s.status === 'vacant').length;
 
-      if (slot.status === 'accepted') {
-        statusBadge = `<span class="status-badge status-badge-accepted"><i class="bi bi-check-lg"></i> Diterima</span>`;
-        avatarHtml = `<div class="slot-avatar avatar-bima">${slot.initials}</div>`;
-        infoHtml = `
-          <div class="slot-info-box">
-            <strong class="slot-name">${slot.candidateName}</strong>
-            <span class="slot-sub">Undangan diterima</span>
-          </div>
-        `;
-      } else if (slot.status === 'pending') {
-        statusBadge = `<span class="status-badge status-badge-pending"><i class="bi bi-clock"></i> Menunggu</span>`;
-        avatarHtml = `<div class="slot-avatar avatar-alya">${slot.initials}</div>`;
-        infoHtml = `
-          <div class="slot-info-box">
-            <strong class="slot-name">${slot.candidateName}</strong>
-            <span class="slot-sub">Undangan terkirim &bull; Belum menerima</span>
-          </div>
-        `;
-      } else {
-        statusBadge = `<span class="status-badge status-badge-vacant"><i class="bi bi-dash-circle"></i> Kosong</span>`;
-        avatarHtml = `<div class="slot-avatar avatar-empty"><i class="bi bi-dash-lg"></i></div>`;
-        infoHtml = `
-          <div class="slot-info-box">
-            <strong class="slot-name">Belum ada kandidat</strong>
-            <span class="slot-sub">Belum ada kandidat yang ditugaskan</span>
-          </div>
-        `;
-      }
+  setText('teamFilledCount', filled);
+  setText('teamPendingCount', pending);
+  setText('teamVacantCount', vacant);
+  setText('teamProgressText', `${filled} dari ${slots.length} posisi terisi`);
 
-      card.innerHTML = `
-        <div class="slot-role-box">
-          <span>${slot.role}</span>
-        </div>
-        ${avatarHtml}
-        ${infoHtml}
-        <div class="slot-status-box ms-auto">
-          ${statusBadge}
-        </div>
-      `;
-
-      DOM.teamSlotsContainer.appendChild(card);
-    });
-
-    document.querySelectorAll('.btn-view-invites-from-slot').forEach(btn => {
-      btn.addEventListener('click', () => {
-        navigateToScreen('screen-invitations');
-      });
-    });
-
-    document.querySelectorAll('.btn-fill-vacant-slot').forEach(btn => {
-      btn.addEventListener('click', () => {
-        APP_STATE.searchQuery = '';
-        if (DOM.searchInput) {
-          DOM.searchInput.value = '';
-          DOM.searchInput.focus();
-        }
-        APP_STATE.activeCategory = 'Hackathon';
-        DOM.categoryChips.forEach(chip => {
-          if (chip.getAttribute('data-category') === APP_STATE.activeCategory) {
-            chip.classList.add('active');
-            chip.setAttribute('aria-selected', 'true');
-          } else {
-            chip.classList.remove('active');
-            chip.setAttribute('aria-selected', 'false');
-          }
-        });
-        navigateToScreen('screen-dashboard');
-        showToast('Silakan cari atau pilih kandidat untuk posisi Frontend Developer.');
-      });
-    });
+  const percent = Math.round((filled / total) * 100);
+  const fill = el('teamProgressBarFill');
+  if (fill) {
+    fill.style.width = `${percent}%`;
+    fill.parentElement?.setAttribute('aria-valuenow', String(percent));
   }
+
+  setHTML('teamSlotsContainer', slots.map(slotCardHTML).join(''));
+}
+
+function startFillRole(role) {
+  resetDashboardFilters();
+  navigateToScreen('screen-dashboard');
+  el('candidateSearchInput')?.focus();
+  showToast(`Silakan pilih kandidat untuk posisi ${role}.`);
+}
+
+// ============================================================================
+// 8. SINKRONISASI, TOAST, EVENT & INISIALISASI
+// ============================================================================
+
+function refreshAll() {
+  updateUnreadUI();
+  renderInvitations();
+  renderTeam();
 }
 
 function showToast(message) {
-  if (!DOM.toastContainer) return;
+  const container = el('toastContainer');
+  if (!container) return;
 
   const toast = document.createElement('div');
   toast.className = 'toast-custom';
   toast.setAttribute('role', 'status');
-  toast.setAttribute('aria-live', 'polite');
-  toast.innerHTML = `
-    <i class="bi bi-check-circle-fill text-info fs-5"></i>
-    <span>${message}</span>
-  `;
+  toast.innerHTML = '<i class="bi bi-check-circle-fill text-info fs-5"></i>';
 
-  DOM.toastContainer.appendChild(toast);
+  const text = document.createElement('span');
+  text.textContent = message;
+  toast.appendChild(text);
+
+  container.appendChild(toast);
 
   setTimeout(() => {
+    toast.style.transition = 'all 0.3s ease';
     toast.style.opacity = '0';
     toast.style.transform = 'translateY(16px)';
-    toast.style.transition = 'all 0.3s ease';
-    setTimeout(() => {
-      toast.remove();
-    }, 300);
-  }, 3500);
+    setTimeout(() => toast.remove(), 300);
+  }, APP_CONFIG.toastDurationMs);
 }
 
-function initEventListeners() {
-  const brandLogo = document.getElementById('brandLogo');
-  if (brandLogo) {
-    brandLogo.addEventListener('click', (e) => {
-      e.preventDefault();
-      navigateToScreen('screen-dashboard');
-    });
+const ACTIONS = {
+  brandLogo: () => navigateToScreen('screen-dashboard'),
+  btnBackToDashboard: () => navigateToScreen('screen-dashboard'),
+  btnOpenInviteModal: openInviteModal,
+  btnCloseInviteDialog: closeInviteModal,
+  btnCancelInvite: closeInviteModal,
+  btnSubmitInvite: submitInvite,
+  btnDismissUpdateBanner: dismissUpdates,
+  btnViewInvitationsFromTeam: () => navigateToScreen('screen-invitations'),
+  btnOpenFilterModal: openFilterDialog,
+  btnCloseFilterDialog: () => el('filterDialog')?.close(),
+  btnApplyFilters: applyFilters,
+  btnResetFilters: resetFilters,
+  btnResetSearch: () => { resetDashboardFilters(); renderCandidates(); },
+};
+
+function onDocumentClick(e) {
+  const nav = e.target.closest('[data-target-screen]');
+  if (nav) {
+    e.preventDefault();
+    navigateToScreen(nav.dataset.targetScreen);
+    return;
   }
 
-  DOM.navTabs.forEach(tab => {
-    tab.addEventListener('click', (e) => {
-      e.preventDefault();
-      const target = tab.getAttribute('data-target-screen');
-      if (target) {
-        navigateToScreen(target);
-      }
-    });
-  });
+  const chip = e.target.closest('[data-category]');
+  if (chip) return setCategory(chip.dataset.category);
 
-  if (DOM.searchInput) {
-    DOM.searchInput.addEventListener('input', handleSearchInput);
+  const tab = e.target.closest('[data-status]');
+  if (tab) return setInvitationFilter(tab.dataset.status);
+
+  const profileBtn = e.target.closest('[data-view-profile]');
+  if (profileBtn) {
+    APP_STATE.selectedCandidateId = profileBtn.dataset.viewProfile;
+    return navigateToScreen('screen-profile');
   }
 
-  if (DOM.resetSearchBtn) {
-    DOM.resetSearchBtn.addEventListener('click', () => {
-      APP_STATE.searchQuery = '';
-      APP_STATE.filterProdi = [];
-      APP_STATE.filterSkills = [];
-      if (DOM.searchInput) DOM.searchInput.value = '';
-      document.querySelectorAll('input[name="filterProdi"], input[name="filterSkill"]')
-        .forEach(input => input.checked = false);
-      APP_STATE.activeCategory = 'Hackathon';
-      DOM.categoryChips.forEach(chip => {
-        if (chip.getAttribute('data-category') === APP_STATE.activeCategory) {
-          chip.classList.add('active');
-          chip.setAttribute('aria-selected', 'true');
-        } else {
-          chip.classList.remove('active');
-          chip.setAttribute('aria-selected', 'false');
-        }
-      });
-      renderCandidates();
-    });
+  if (e.target.closest('[data-view-invitations]')) {
+    return navigateToScreen('screen-invitations');
   }
 
-  DOM.categoryChips.forEach(chip => {
-    chip.addEventListener('click', () => {
-      DOM.categoryChips.forEach(c => {
-        c.classList.remove('active');
-        c.setAttribute('aria-selected', 'false');
-      });
-      chip.classList.add('active');
-      chip.setAttribute('aria-selected', 'true');
-      APP_STATE.activeCategory = chip.getAttribute('data-category');
-      renderCandidates();
-    });
-  });
+  const fillBtn = e.target.closest('[data-fill-role]');
+  if (fillBtn) return startFillRole(fillBtn.dataset.fillRole);
 
-  const backBtn = document.getElementById('btnBackToDashboard');
-  if (backBtn) {
-    backBtn.addEventListener('click', (e) => {
-      e.preventDefault();
-      navigateToScreen('screen-dashboard');
-    });
+  const withId = e.target.closest('[id]');
+  if (withId && ACTIONS[withId.id]) {
+    e.preventDefault();
+    ACTIONS[withId.id]();
   }
+}
 
-  if (DOM.btnOpenInviteModal) {
-    DOM.btnOpenInviteModal.addEventListener('click', openInviteModal);
+function onDocumentChange(e) {
+  if (e.target.name !== 'selectedRole') return;
+
+  setInviteError(false);
+  document.querySelectorAll('.role-radio-label').forEach(l => l.classList.remove('selected'));
+  e.target.closest('.role-radio-label')?.classList.add('selected');
+}
+
+function renderCurrentUser() {
+  const avatar = el('headerUserAvatar');
+  if (avatar) {
+    avatar.textContent = CURRENT_USER.initials;
+    avatar.title = `${CURRENT_USER.name} — ${CURRENT_USER.role}`;
   }
-
-  if (DOM.btnCloseInviteDialog) {
-    DOM.btnCloseInviteDialog.addEventListener('click', closeInviteModal);
-  }
-  if (DOM.btnCancelInvite) {
-    DOM.btnCancelInvite.addEventListener('click', closeInviteModal);
-  }
-
-  if (DOM.inviteDialog) {
-    DOM.inviteDialog.addEventListener('click', (e) => {
-      const rect = DOM.inviteDialog.getBoundingClientRect();
-      const isInDialog = (
-        rect.top <= e.clientY &&
-        e.clientY <= rect.top + rect.height &&
-        rect.left <= e.clientX &&
-        e.clientX <= rect.left + rect.width
-      );
-      if (!isInDialog) {
-        closeInviteModal();
-      }
-    });
-
-    DOM.inviteDialog.addEventListener('keydown', (e) => {
-      if (e.key === 'Escape') {
-        closeInviteModal();
-      }
-    });
-  }
-
-  DOM.inviteRoleInputs.forEach(input => {
-    input.addEventListener('change', () => {
-      if (DOM.inviteErrorAlert) DOM.inviteErrorAlert.style.display = 'none';
-      document.querySelectorAll('.role-radio-label').forEach(label => label.classList.remove('selected'));
-      const parentLabel = input.closest('.role-radio-label');
-      if (parentLabel) parentLabel.classList.add('selected');
-    });
-  });
-
-  if (DOM.btnSubmitInvite) {
-    DOM.btnSubmitInvite.addEventListener('click', handleInviteFormSubmit);
-  }
-
-  DOM.statusFilterButtons.forEach(btn => {
-    btn.addEventListener('click', () => {
-      DOM.statusFilterButtons.forEach(b => b.classList.remove('active'));
-      btn.classList.add('active');
-      APP_STATE.invitationStatusFilter = btn.getAttribute('data-status');
-      renderInvitations();
-    });
-  });
-
-  if (DOM.btnDismissUpdateBanner) {
-    DOM.btnDismissUpdateBanner.addEventListener('click', () => {
-      if (DOM.statusUpdateBanner) {
-        DOM.statusUpdateBanner.style.display = 'none';
-      }
-      APP_STATE.unreadUpdates = 0;
-      if (DOM.unreadBadge) {
-        DOM.unreadBadge.style.display = 'none';
-      }
-      showToast('Pembaruan status telah ditandai sebagai sudah dibaca.');
-    });
-  }
-
-  if (DOM.btnViewInvitationsFromTeam) {
-    DOM.btnViewInvitationsFromTeam.addEventListener('click', () => {
-      navigateToScreen('screen-invitations');
-    });
-  }
-
-  if (DOM.btnOpenFilterModal && DOM.filterDialog) {
-    DOM.btnOpenFilterModal.addEventListener('click', () => {
-      if (typeof DOM.filterDialog.showModal === 'function') {
-        DOM.filterDialog.showModal();
-      }
-    });
-  }
-  if (DOM.btnCloseFilterDialog && DOM.filterDialog) {
-    DOM.btnCloseFilterDialog.addEventListener('click', () => {
-      DOM.filterDialog.close();
-    });
-  }
-  if (DOM.btnApplyFilters && DOM.filterDialog) {
-    DOM.btnApplyFilters.addEventListener('click', () => {
-      const prodiCheckboxes = document.querySelectorAll('input[name="filterProdi"]:checked');
-      const skillsCheckboxes = document.querySelectorAll('input[name="filterSkill"]:checked');
-
-      APP_STATE.filterProdi = Array.from(prodiCheckboxes).map(c => c.value);
-      APP_STATE.filterSkills = Array.from(skillsCheckboxes).map(c => c.value);
-
-      DOM.filterDialog.close();
-      renderCandidates();
-      showToast(`Filter diterapkan: ${APP_STATE.filterProdi.length + APP_STATE.filterSkills.length} kriteria aktif.`);
-    });
-  }
-  if (DOM.btnResetFilters && DOM.filterDialog) {
-    DOM.btnResetFilters.addEventListener('click', () => {
-      document.querySelectorAll('input[name="filterProdi"]').forEach(c => c.checked = false);
-      document.querySelectorAll('input[name="filterSkill"]').forEach(c => c.checked = false);
-      APP_STATE.filterProdi = [];
-      APP_STATE.filterSkills = [];
-      DOM.filterDialog.close();
-      renderCandidates();
-      showToast('Filter kriteria berhasil direset.');
-    });
-  }
+  setText('heroUserName', `${CURRENT_USER.name}!`);
 }
 
 document.addEventListener('DOMContentLoaded', async () => {
-  await loadAllScreens();
-  initDOMElements();
-  initEventListeners();
-  navigateToScreen(getScreenFromLocation(), false);
+  await loadScreens();
+
+  renderCurrentUser();
+  initDashboardControls();
+  initInvitationTabs();
+
+  el('candidateSearchInput')?.addEventListener('input', onSearchInput);
+  document.addEventListener('click', onDocumentClick);
+  document.addEventListener('change', onDocumentChange);
+  bindDialogBackdrop('modal-invite');
+  bindDialogBackdrop('filterDialog');
+
+  refreshAll();
+  navigateToScreen(screenFromHash(), false);
 });
 
 window.addEventListener('popstate', () => {
-  navigateToScreen(getScreenFromLocation(), false);
+  navigateToScreen(screenFromHash(), false);
 });

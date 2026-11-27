@@ -7,44 +7,24 @@
   </div>
 
   <div class="modal-body-custom">
-    <p class="modal-instruction-text">
+    <p class="modal-instruction-text" id="inviteInstruction">
       Undangan untuk peran yang dipilih akan dikirim kepada Alya Putri. Status undangan akan menjadi Menunggu hingga kandidat memberikan respons.
     </p>
 
     <div class="modal-candidate-summary">
-      <div class="modal-avatar-mini" aria-hidden="true">AP</div>
+      <div class="modal-avatar-mini" id="inviteAvatar" aria-hidden="true">AP</div>
       <div>
-        <strong class="d-block text-white fs-6">Alya Putri</strong>
-        <span class="text-caption text-light">Teknik Informatika</span>
+        <strong class="d-block text-white fs-6" id="inviteCandidateName">Alya Putri</strong>
+        <span class="text-caption text-light" id="inviteCandidateProgram">Teknik Informatika</span>
       </div>
     </div>
 
     <fieldset class="role-fieldset">
       <legend class="role-legend">Pilih Peran</legend>
       
-      <div class="role-radio-group">
-        <label class="role-radio-label">
-          <input type="radio" name="selectedRole" value="Frontend Developer" class="role-radio-input">
-          <span class="role-title">Frontend Developer</span>
-        </label>
+      <div class="role-radio-group" id="roleRadioGroup"></div>
 
-        <label class="role-radio-label">
-          <input type="radio" name="selectedRole" value="Backend Developer" class="role-radio-input">
-          <span class="role-title">Backend Developer</span>
-        </label>
-
-        <label class="role-radio-label">
-          <input type="radio" name="selectedRole" value="UI/UX Designer" class="role-radio-input">
-          <span class="role-title">UI/UX Designer</span>
-        </label>
-
-        <label class="role-radio-label">
-          <input type="radio" name="selectedRole" value="Data Analyst" class="role-radio-input">
-          <span class="role-title">Data Analyst</span>
-        </label>
-      </div>
-
-      <p class="role-helper-note">Pilih satu peran untuk Alya Putri.</p>
+      <p class="role-helper-note" id="roleHelperNote">Pilih satu peran untuk Alya Putri.</p>
     </fieldset>
 
     <div id="inviteErrorAlert" class="modal-error-alert" role="alert" tabindex="-1">

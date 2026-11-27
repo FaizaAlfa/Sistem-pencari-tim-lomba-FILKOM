@@ -810,18 +810,17 @@ a:hover {
   flex-shrink: 0;
 }
 
-.avatar-alya,
-.avatar-dimas {
+.avatar-blue {
   background-color: #C8D7FF;
   color: #241B42;
 }
 
-.avatar-bima {
+.avatar-mint {
   background-color: #A7F3D0;
   color: #175F52;
 }
 
-.avatar-citra {
+.avatar-pink {
   background-color: #FFD6E4;
   color: #7B2548;
 }
@@ -2047,4 +2046,10 @@ a:hover {
     width: 100%;
     min-width: unset;
   }
+}
+
+.portfolio-icon {
+  font-size: 4rem;
+  color: #241B42;
+  opacity: 0.85;
 }

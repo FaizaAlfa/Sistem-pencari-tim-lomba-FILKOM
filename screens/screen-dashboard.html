@@ -3,7 +3,7 @@
     <div class="row align-items-center">
       <div class="col-12 col-md-8">
         <h1 id="dashboardHeroTitle" class="hero-title">
-          Halo, <span class="hero-title-accent">Rizal!</span>
+          Halo, <span class="hero-title-accent" id="heroUserName">Rizal!</span>
         </h1>
         <p class="hero-subtitle">Temukan partner terbaik untuk kompetisi berikutnya.</p>
 
@@ -62,20 +62,7 @@
     <aside class="col-12 col-lg-3">
       <div class="category-sidebar">
         <h2 class="filter-sidebar-title">Kategori Kompetisi</h2>
-        <div class="category-chip-group" role="tablist" aria-label="Filter Kategori">
-          <button class="category-chip active" data-category="Hackathon" role="tab" aria-selected="true">
-            <span>Hackathon</span>
-          </button>
-          <button class="category-chip" data-category="CTF" role="tab" aria-selected="false">
-            <span>CTF</span>
-          </button>
-          <button class="category-chip" data-category="Business Plan" role="tab" aria-selected="false">
-            <span>Business Plan</span>
-          </button>
-          <button class="category-chip" data-category="Other" role="tab" aria-selected="false">
-            <span>Other</span>
-          </button>
-        </div>
+        <div class="category-chip-group" id="categoryChipGroup" role="tablist" aria-label="Filter Kategori"></div>
       </div>
     </aside>
 
@@ -120,58 +107,12 @@
   <div class="modal-body-custom">
     <div class="mb-4">
       <label class="fw-bold mb-2 d-block text-primary">Program Studi (FILKOM)</label>
-      <div class="checkbox-pill-grid">
-        <label class="checkbox-pill-label">
-          <input type="checkbox" name="filterProdi" value="Teknik Informatika">
-          <span>Teknik Informatika</span>
-        </label>
-        <label class="checkbox-pill-label">
-          <input type="checkbox" name="filterProdi" value="Sistem Informasi">
-          <span>Sistem Informasi</span>
-        </label>
-        <label class="checkbox-pill-label">
-          <input type="checkbox" name="filterProdi" value="Teknologi Informasi">
-          <span>Teknologi Informasi</span>
-        </label>
-        <label class="checkbox-pill-label">
-          <input type="checkbox" name="filterProdi" value="Teknik Komputer">
-          <span>Teknik Komputer</span>
-        </label>
-        <label class="checkbox-pill-label">
-          <input type="checkbox" name="filterProdi" value="Pendidikan Teknologi Informasi">
-          <span>Pendidikan TI</span>
-        </label>
-      </div>
+      <div class="checkbox-pill-grid" id="filterProdiGroup"></div>
     </div>
 
     <div class="mb-2">
       <label class="fw-bold mb-2 d-block text-primary">Keahlian Spesifik</label>
-      <div class="checkbox-pill-grid">
-        <label class="checkbox-pill-label">
-          <input type="checkbox" name="filterSkill" value="UI/UX">
-          <span>UI/UX</span>
-        </label>
-        <label class="checkbox-pill-label">
-          <input type="checkbox" name="filterSkill" value="Figma">
-          <span>Figma</span>
-        </label>
-        <label class="checkbox-pill-label">
-          <input type="checkbox" name="filterSkill" value="Python">
-          <span>Python</span>
-        </label>
-        <label class="checkbox-pill-label">
-          <input type="checkbox" name="filterSkill" value="SQL">
-          <span>SQL</span>
-        </label>
-        <label class="checkbox-pill-label">
-          <input type="checkbox" name="filterSkill" value="Riset UX">
-          <span>Riset UX</span>
-        </label>
-        <label class="checkbox-pill-label">
-          <input type="checkbox" name="filterSkill" value="Analisis Data">
-          <span>Analisis Data</span>
-        </label>
-      </div>
+      <div class="checkbox-pill-grid" id="filterSkillGroup"></div>
     </div>
   </div>
 
